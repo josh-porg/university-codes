@@ -18,7 +18,8 @@ dependencies = [
 [project.optional-dependencies]
 plot = ["matplotlib>=3.7"]
 mat73 = ["h5py>=3.8"]
-dev = ["pytest>=7"]
+symbolic = ["sympy>=1.12"]
+dev = ["pytest>=7", "sympy>=1.12", "matplotlib>=3.7"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
