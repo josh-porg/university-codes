@@ -1,0 +1,10 @@
+"""Compressible-flow CFD building blocks (AE 746).
+
+    from unicodes.cfd import StructuredMesh2D, solve_steady, euler
+"""
+
+from . import euler
+from .mesh import StructuredMesh2D
+from .solver2d import SteadyResult, residual, solve_steady
+
+__all__ = ["StructuredMesh2D", "SteadyResult", "euler", "residual", "solve_steady"]
