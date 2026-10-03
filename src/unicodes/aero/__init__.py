@@ -4,8 +4,8 @@
     from unicodes.aero import soaring
 """
 
-from . import soaring
+from . import sizing, soaring
 from .airfoil import Airfoil
 from .propeller import PropellerBlade, PropellerPerformance
 
-__all__ = ["Airfoil", "PropellerBlade", "PropellerPerformance", "soaring"]
+__all__ = ["Airfoil", "PropellerBlade", "PropellerPerformance", "sizing", "soaring"]

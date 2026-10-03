@@ -63,3 +63,41 @@ def test_cross_entropy_finds_maximum():
         n_samples=200, elite_fraction=0.2, max_iterations=40, rtol=0, rng=0,
     )
     np.testing.assert_allclose(res.x, [2.0, -1.0], atol=1e-2)
+
+
+def test_ferry_mission_matches_ae521_script():
+    from unicodes.aero import sizing
+
+    V_cruise = sizing.mach_to_kts(0.75, 968.1)
+    V_divert = sizing.mach_to_kts(0.75, 1036.8)
+    mission = [
+        ("engine start", 0.99), ("taxi", 0.99), ("take-off", 0.995), ("climb", 0.985),
+        ("cruise", sizing.breguet_range_fraction(3000, V_cruise, 0.34, 26)),
+        ("descent", 0.995), ("landing", 1.0), ("climb 2", 0.995),
+        ("divert", sizing.breguet_range_fraction(100, V_divert, 0.34, 26)),
+        ("loiter", sizing.breguet_endurance_fraction(0.75, 0.34, 26)),
+        ("descent 2", 0.995), ("landing 2", 1.0), ("shutdown", 0.995),
+    ]
+    W_TO = 130000 - 75000
+    est = sizing.estimate_weights(W_TO, mission, payload=0, crew=700)
+    M_ff = np.prod([f for _, f in mission])
+    assert est.fuel_used == pytest.approx((1 - M_ff) * W_TO)
+    assert est.empty_tentative == pytest.approx(W_TO - est.fuel_used - 700 - 0.01 * est.fuel_used)
+
+
+def test_payload_drop_reduces_later_fuel_burn():
+    from unicodes.aero import sizing
+
+    mission = [("climb", 0.98), ("cruise", 0.9)]
+    carried = sizing.estimate_weights(100.0, mission, payload=20)
+    dropped = sizing.estimate_weights(100.0, mission, payload=20, payload_drop_after="climb")
+    assert dropped.fuel_used == pytest.approx(2 + (98 - 20) * 0.1)
+    assert dropped.fuel_used < carried.fuel_used
+
+
+def test_take_off_weight_iteration_converges():
+    from unicodes.aero import sizing
+
+    mission = [("all", 0.7)]
+    est = sizing.size_take_off_weight(mission, payload=10000, crew=700, A=0.2678, B=0.9979, W_guess=1e5)
+    assert est.empty_tentative == pytest.approx(sizing.roskam_empty_weight(est.W_TO, 0.2678, 0.9979))
