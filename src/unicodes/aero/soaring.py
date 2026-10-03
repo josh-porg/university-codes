@@ -20,10 +20,27 @@ HORSTMANN_THERMALS = {
 }
 
 
-def horstmann_thermal(r, thermal: str = "A1"):
-    """Updraft velocity (m/s) at radius ``r`` (m) for a Horstmann thermal type."""
+# Climb rate on the axis (r = 0) used for the Kubrynski parabolic core.
+HORSTMANN_CORE = {"A1": 2 + 6 / 7, "A2": 5.0, "B1": 1 + 13 / 14, "B2": 3 + 6 / 7}
+
+# Quast weather model: share of each Horstmann thermal type.
+QUAST_WEIGHTS = {"A1": 0.08, "A2": 0.42, "B1": 0.08, "B2": 0.42}
+
+
+def horstmann_thermal(r, thermal: str = "A1", core: bool = False):
+    """Updraft velocity (m/s) at radius ``r`` (m) for a Horstmann thermal type.
+
+    ``core=False`` is the plain linear model (``Vthermal``). ``core=True`` is
+    the later ``HorstmannThermal``: inside 60 m the linear profile is averaged
+    with Kubrynski's parabolic core, and the updraft is clamped at zero.
+    """
     v_core, gradient = HORSTMANN_THERMALS[thermal]
-    return v_core - gradient * (np.asarray(r, dtype=float) - 60)
+    r = np.asarray(r, dtype=float)
+    linear = v_core - gradient * (r - 60)
+    if not core:
+        return linear
+    parabola = -gradient / 120 * r**2 + v_core + 30 * gradient
+    return np.maximum(np.where(r > 60, linear, (linear + parabola) / 2), 0.0)
 
 
 def drag_coefficient(C_L, C_D0, A, e):
@@ -104,3 +121,92 @@ def best_climb_in_thermal(thermal, C_D0, A, e, wing_loading, rho, C_L_max, r_max
     r_min = 2 * wing_loading / (rho * g * C_L_max) * 1.0001  # tightest possible turn
     res = minimize_scalar(neg_climb, bounds=(r_min, r_max), method="bounded")
     return -res.fun, res.x
+
+
+def wing_loading_for_circling_sink(V_sc, r, C_L, C_D0, A, e, rho, g=G0):
+    """Largest wing loading (N/m^2) that circles at radius ``r`` with sink ``V_sc`` (``W2S_SinkRateCircle``).
+
+    The MATLAB substituted into a saved symbolic solution; this solves the
+    same equation numerically. Works elementwise over ``A``/``C_D0`` arrays.
+    """
+
+    def one(cd0, a):
+        f = lambda ws: sink_rate_in_turn(C_L, cd0, a, e, ws, rho, r, g) - V_sc  # noqa: E731
+        hi = 0.5 * rho * r * g * C_L * (1 - 1e-12)  # turn becomes impossible here
+        if f(1e-6) > 0:
+            return np.nan
+        if f(hi * (1 - 1e-9)) < 0:
+            return hi
+        from scipy.optimize import brentq
+
+        return brentq(f, 1e-6, hi * (1 - 1e-9))
+
+    return np.vectorize(one)(C_D0, A)
+
+
+def climb_in_thermal(thermal, C_L, C_D0, A, e, wing_loading, rho, r=np.arange(1, 1000, 0.1), core=True, g=G0):
+    """Best climb rate and radius circling at ``C_L`` in a Horstmann thermal (grid search like the MATLAB)."""
+    sink = sink_rate_in_turn(C_L, C_D0, A, e, wing_loading, rho, r, g)
+    climb = horstmann_thermal(r, thermal, core) - np.where(np.isnan(sink), np.inf, sink)
+    k = int(np.argmax(climb))
+    return climb[k], r[k]
+
+
+def interthermal_glide_cl(climb, C_D0, A, e, wing_loading, rho):
+    """Optimal inter-thermal C_L from ``C_D0 - C_L^2/(pi A e) - V_c C_L^1.5 / (2 sqrt(2 W/S / rho)) = 0``.
+
+    (``LiftCoefficient_Optimal_Interthermal_Glide``); returns 0 when there is no root.
+    """
+    from scipy.optimize import brentq
+
+    f = lambda cl: C_D0 - cl**2 / (np.pi * A * e) - climb * cl**1.5 / (2 * np.sqrt(2 * wing_loading / rho))  # noqa: E731
+    hi = np.sqrt(C_D0 * np.pi * A * e)
+    if climb <= 0 or f(hi) > 0:
+        return 0.0
+    return brentq(f, 1e-9, hi)
+
+
+def average_speed_horstmann(C_L_circle, C_D0, A, e, wing_loading, rho):
+    """Average cross-country speed (m/s) in each Horstmann thermal (``AverageCrossCountrySpeed_Horstmnan``)."""
+    out = {}
+    for name in HORSTMANN_THERMALS:
+        climb, _ = climb_in_thermal(name, C_L_circle, C_D0, A, e, wing_loading, rho)
+        if climb <= 0:
+            out[name] = 0.0
+            continue
+        cl = interthermal_glide_cl(climb, C_D0, A, e, wing_loading, rho)
+        out[name] = float(average_cross_country_speed(cl, climb, C_D0, A, e, wing_loading, rho)) if cl > 0 else 0.0
+    return out
+
+
+def average_speed_quast(C_L_circle, C_D0, A, e, wing_loading, rho):
+    """Quast-weather-weighted average cross-country speed (``AverageCrossCountrySpeed_Quast``)."""
+    v = average_speed_horstmann(C_L_circle, C_D0, A, e, wing_loading, rho)
+    return sum(QUAST_WEIGHTS[k] * v[k] for k in v)
+
+
+def speed_polar(V, C_D0, A, e, wing_loading, rho):
+    """Sink rate (m/s, negative down) against airspeed plus best-glide and minimum-sink points (``V_sink``).
+
+    Returns ``(sink, best_glide, min_sink)`` where each point is a dict with
+    ``V``, ``sink``, ``C_L``, ``L_D`` and flight-path angle ``gamma`` (deg).
+    The MATLAB located them by finite differences; here they are analytic.
+    """
+    V = np.asarray(V, dtype=float)
+    C_L = 2 * wing_loading / (rho * V**2)
+    sink = -drag_coefficient(C_L, C_D0, A, e) / C_L * V
+
+    def point(cl):
+        v = np.sqrt(2 * wing_loading / (rho * cl))
+        ld = cl / drag_coefficient(cl, C_D0, A, e)
+        return dict(V=v, sink=-v / ld, C_L=cl, L_D=ld, gamma=-np.rad2deg(np.arctan(1 / ld)))
+
+    k = np.pi * A * e
+    return sink, point(np.sqrt(C_D0 * k)), point(np.sqrt(3 * C_D0 * k))
+
+
+def ride_quality_index(rho, U, wing_loading, C_L_alpha, C_Y_beta, sigma_w=1.0, sigma_v=1.0):
+    """Ride-discomfort index C_ride from vertical and lateral gust sensitivity (AE 722 ``Ride_quality``)."""
+    a_vert = rho * U / (2 * wing_loading) * np.asarray(C_L_alpha) * sigma_w
+    a_lat = abs(rho * U / (2 * wing_loading) * C_Y_beta * sigma_v)
+    return np.where(a_vert > 1.6 * a_lat, 2 + 18.9 * a_vert + 12.1 * a_lat, 2 + 1.62 * a_vert + 38.9 * a_lat)

@@ -225,3 +225,31 @@ def cm0_tail(S_h, S_ref, eta_h, C_L_alpha_h, epsilon_0, x_cg, x_ac_h):
 def free_vortex_velocity(r, circulation):
     """Tangential velocity of a free vortex ``-Gamma / (2 pi r)``."""
     return -circulation / (2 * np.pi * np.asarray(r, dtype=float))
+
+
+def tapered_wing(A, b, taper):
+    """Root chord, tip chord and mean geometric chord of a straight-tapered wing of span ``b``.
+
+    (``solveWing`` in ``wing_geometery2``; ``A = 2 b / (c_r (1 + taper))``.)
+    """
+    c_r = 2 * b / (A * (1 + taper))
+    c_bar = 2 / 3 * c_r * (1 + taper + taper**2) / (1 + taper)
+    return c_r, taper * c_r, c_bar
+
+
+def trapezoid_panel(S, taper, c_r, sweep_le, full_span: bool = True):
+    """Planform corner points of a trapezoidal surface (``Empenage_Geometery``).
+
+    Returns ``(span, x, y, mgc)`` where ``x`` is spanwise and ``y`` chordwise
+    (negative aft, as the MATLAB plotted them) for the semi-span, and ``mgc``
+    is ``(c_bar, x_mgc, y_mgc)``. ``full_span=False`` treats ``S`` as a single
+    panel, e.g. a vertical tail.
+    """
+    b = (2 if full_span else 1) * S / (c_r * (1 + taper))
+    semi = b / 2 if full_span else b
+    c_t = c_r * taper
+    dx = semi * np.tan(sweep_le)
+    x = np.array([0, semi, semi, 0])
+    y = -np.array([0, dx, dx + c_t, c_r])
+    mgc = mean_geometric_chord(c_r, 2 * semi, taper, sweep_le)
+    return b, x, y, mgc

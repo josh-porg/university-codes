@@ -110,3 +110,17 @@ def size_take_off_weight(mission, payload, crew, A, B, W_guess=1e5, payload_drop
 
     W = brentq(mismatch, W_guess / 20, W_guess * 20)
     return estimate_weights(W, mission, payload, crew, payload_drop_after, trapped_fraction)
+
+
+def stamped_trend(years, ratios, year, n_sigma=0.0):
+    """STAMPED-style linear trend of a weight ratio (e.g. W_e/W_TO) projected to ``year``.
+
+    ``n_sigma`` shifts the fit by that many standard deviations of the data
+    (negative is aggressive, positive conservative), as in
+    ``Archytas_Weight_Sizing``. Returns ``(value, coeffs)`` with ``coeffs``
+    from :func:`numpy.polyfit`.
+    """
+    years = np.asarray(years, dtype=float)
+    ratios = np.asarray(ratios, dtype=float)
+    coeffs = np.polyfit(years, ratios + n_sigma * np.std(ratios, ddof=1), 1)
+    return float(np.polyval(coeffs, year)), coeffs
