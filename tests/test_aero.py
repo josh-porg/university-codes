@@ -1,0 +1,65 @@
+import numpy as np
+import pytest
+
+from unicodes.aero import Airfoil, PropellerBlade, soaring
+from unicodes.optimize import cross_entropy_maximize
+
+
+def make_airfoil():
+    d = np.deg2rad
+    return Airfoil("test", "unit test", 2 * np.pi, d(-4), 0.44, d(8), d(0), 1.3, d(14), 1.6, d(18), 1.1)
+
+
+def test_airfoil_spline_hits_points_and_peaks_at_clmax():
+    af = make_airfoil()
+    alpha, c_l = af.key_points()
+    np.testing.assert_allclose(af.c_l(alpha), c_l, atol=1e-12)
+    assert af.c_l_alpha_at(af.alpha_c_l_max) == pytest.approx(0, abs=1e-9)
+    grid = np.linspace(af.alpha_0, af.alpha_post_stall, 500)
+    assert af.c_l(grid).max() == pytest.approx(af.c_l_max, abs=1e-3)
+    assert af.c_l(np.deg2rad(25)) == 0.0
+
+
+def test_airfoil_file(tmp_path):
+    path = tmp_path / "af.txt"
+    make_airfoil().write_airfoil_file(path)
+    assert "alpha_c_l_max [deg]=14.0" in path.read_text()
+
+
+POLAR = dict(C_D0=0.012, A=22.8, e=0.9, wing_loading=280.0, rho=1.0834)
+
+
+def test_turn_sink_tends_to_straight_glide():
+    straight = soaring.sink_rate(1.0, **POLAR)
+    turning = soaring.sink_rate_in_turn(1.0, **POLAR, r=1e6)
+    assert turning == pytest.approx(straight, rel=1e-6)
+    assert np.isnan(soaring.sink_rate_in_turn(1.0, **POLAR, r=5.0))
+
+
+def test_maccready_speed_to_fly_increases_with_climb_rate():
+    cl_weak, v_weak = soaring.optimal_glide_cl(1.0, **POLAR, C_L_max=1.5)
+    cl_strong, v_strong = soaring.optimal_glide_cl(3.0, **POLAR, C_L_max=1.5)
+    assert cl_strong < cl_weak  # fly faster between strong thermals
+    assert v_strong > v_weak
+
+
+def test_best_climb_in_thermal_is_positive_for_strong_thermal():
+    climb, r = soaring.best_climb_in_thermal("A2", **POLAR, C_L_max=1.4)
+    assert 0 < climb < 3.5
+    assert r > 0
+
+
+def test_propeller_matches_requested_power():
+    blade = PropellerBlade(np.deg2rad(45), np.deg2rad(15), np.deg2rad(-42), -0.7, 0.1, radius=1.1)
+    V, rho = 75 * 0.514444, 0.002133 * 515.379
+    perf = blade.match_power(19.7e3, V=V, rho=rho)
+    assert perf.aero_power == pytest.approx(19.7e3, rel=1e-6)
+    assert 0.5 < perf.efficiency < 1.0
+
+
+def test_cross_entropy_finds_maximum():
+    res = cross_entropy_maximize(
+        lambda x: -np.sum((x - np.array([2.0, -1.0])) ** 2), x0=[1.0, -0.5], rel_std=0.5,
+        n_samples=200, elite_fraction=0.2, max_iterations=40, rtol=0, rng=0,
+    )
+    np.testing.assert_allclose(res.x, [2.0, -1.0], atol=1e-2)
