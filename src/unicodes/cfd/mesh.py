@@ -39,3 +39,24 @@ class StructuredMesh2D:
     @property
     def shape(self) -> tuple[int, int]:
         return self.volume.shape
+
+
+def resample_by_arclength(curve, n):
+    """``n`` points equally spaced in arc length along the polyline ``curve`` (m, 2)."""
+    curve = np.asarray(curve, dtype=float)
+    s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(curve, axis=0), axis=1))]
+    target = np.linspace(0, s[-1], n)
+    return np.column_stack([np.interp(target, s, curve[:, k]) for k in range(curve.shape[1])])
+
+
+def ruled_mesh(inner, outer, n_along, n_across):
+    """Algebraic mesh with straight lines between two boundary curves (AE 746 project 3).
+
+    Both curves are resampled to ``n_along`` points equally spaced in arc
+    length and joined by ``n_across`` evenly spaced points. Returns nodes of
+    shape ``(n_along, n_across, 2)`` (the MATLAB ``Mesh(eta, xi, :)``).
+    """
+    a = resample_by_arclength(inner, n_along)
+    b = resample_by_arclength(outer, n_along)
+    s = np.linspace(0, 1, n_across)[None, :, None]
+    return a[:, None, :] * (1 - s) + b[:, None, :] * s
