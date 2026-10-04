@@ -84,3 +84,43 @@ class Airfoil:
             f"alpha_post_S [deg]={deg(self.alpha_post_stall):.14f}\n"
             f"c_l_post_S [-]={self.c_l_post_stall:.14f}\n"
         )
+
+
+def read_airfoil_file(path: str | Path) -> Airfoil:
+    """Read an ``[Airfoil]`` text file written by :meth:`Airfoil.write_airfoil_file` (``ReadAirfoil``)."""
+    p = Path(path)
+    if not p.exists() and p.suffix != ".airfoil":
+        p = p.with_name(p.name + ".airfoil")
+    values = {}
+    for line in p.read_text().splitlines():
+        if "=" in line:
+            key, val = line.split("=", 1)
+            values[key.strip()] = val.strip()
+    rad = np.deg2rad
+    nums = [float(v) for k, v in values.items() if k not in ("Name", "Data Source")]
+    c_l_alpha, a0, c_l_0, a_prime, a_star, c_l_star, a_max, c_l_max, a_ps, c_l_ps = nums[:10]
+    return Airfoil(values.get("Name", p.stem), values.get("Data Source", ""), c_l_alpha, rad(a0), c_l_0,
+                   rad(a_star), rad(a_prime), c_l_star, rad(a_max), c_l_max, rad(a_ps), c_l_ps)
+
+
+def relaxed_airfoil(airfoil: Airfoil, factor: float) -> Airfoil:
+    """Passive aero-compliant (PAH) version of an airfoil (``PAH_generator``).
+
+    Angles are stretched about alpha_c_l_max by ``factor`` (2 halves the
+    lift-curve slope); c_l_max and the stall angle are unchanged.
+    """
+    a_max = airfoil.alpha_c_l_max
+
+    def stretch(a):
+        return a_max - (a_max - a) * factor
+
+    from dataclasses import replace
+
+    return replace(
+        airfoil,
+        name=f"PAH_{airfoil.name}_R{factor:g}",
+        c_l_alpha=airfoil.c_l_alpha / factor,
+        alpha_0=stretch(airfoil.alpha_0),
+        alpha_star=stretch(airfoil.alpha_star),
+        alpha_post_stall=stretch(airfoil.alpha_post_stall),
+    )

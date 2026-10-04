@@ -101,3 +101,65 @@ def test_take_off_weight_iteration_converges():
     mission = [("all", 0.7)]
     est = sizing.size_take_off_weight(mission, payload=10000, crew=700, A=0.2678, B=0.9979, W_guess=1e5)
     assert est.empty_tentative == pytest.approx(sizing.roskam_empty_weight(est.W_TO, 0.2678, 0.9979))
+
+
+def test_airfoil_file_round_trip_and_pah(tmp_path):
+    from unicodes.aero.airfoil import read_airfoil_file, relaxed_airfoil
+
+    af = make_airfoil()
+    path = tmp_path / "x.airfoil"
+    af.write_airfoil_file(path)
+    back = read_airfoil_file(path)
+    assert back.alpha_c_l_max == pytest.approx(af.alpha_c_l_max)
+    pah = relaxed_airfoil(af, 2.0)
+    assert pah.c_l_alpha == pytest.approx(af.c_l_alpha / 2)
+    assert pah.alpha_c_l_max == af.alpha_c_l_max
+    assert pah.c_l(pah.alpha_c_l_max) == pytest.approx(af.c_l_max, abs=1e-6)
+
+
+def test_camber_surface_slice_and_gradient():
+    from unicodes.aero.airfoil import relaxed_airfoil
+    from unicodes.aero.pah import CamberSurface, linear_camber_schedule
+
+    lo = make_airfoil()
+    hi = relaxed_airfoil(lo, 1.0)
+    surf = CamberSurface.from_airfoils(lo, hi, 0.0, 1.0)
+    # identical airfoils -> no camber dependence
+    da, dc = surf.gradients("c_l")
+    np.testing.assert_allclose(dc, 0, atol=1e-12)
+    a = np.deg2rad(4)
+    assert surf.slice("c_l", a, linear_camber_schedule(0, 0.5, 0)) == pytest.approx(lo.c_l(a), rel=1e-3)
+
+
+POLAR_TEXT = """
+       XFOIL         Version 6.99
+
+ Calculated polar for: NACA 2412
+
+ 1 1 Reynolds number fixed          Mach number fixed
+
+ xtrf =   1.000 (top)        1.000 (bottom)
+ Mach =   0.000     Re =     0.500 e 6     Ncrit =   9.000
+
+  alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
+ ------ -------- --------- --------- -------- -------- --------
+  0.000   0.2442   0.00702   0.00175  -0.0533   0.6693   0.9969
+  2.000   0.4697   0.00742   0.00191  -0.0539   0.5779   1.0000
+"""
+
+
+def test_xfoil_polar_parser_and_mesh():
+    from unicodes.aero import xfoil
+
+    p = xfoil.parse_polar(POLAR_TEXT)
+    assert p.name == "NACA 2412" and p.Re == 5e5 and p.Ncrit == 9
+    np.testing.assert_allclose(p.CL, [0.2442, 0.4697])
+
+    def fake_run(name, alpha, Re):  # thin-airfoil stand-in for XFOIL
+        m = int(name[4]) / 100
+        return xfoil.Polar(name, Re, 9, alpha, 2 * np.pi * np.deg2rad(alpha) + 10 * m, *(np.zeros_like(alpha),) * 5)
+
+    A, C, cl = xfoil.lift_mesh([0, 2], alpha_max=10, n_alpha=11, run=fake_run)
+    assert A.shape == (21, 3)
+    np.testing.assert_allclose(cl[:, 1], 2 * np.pi * A[:, 1], atol=1e-12)  # symmetric section in the middle
+    np.testing.assert_allclose(cl[:, 0], -cl[::-1, 2])
