@@ -23,7 +23,7 @@ def _unit_square_mesh():
 
 
 def test_tecplot_roundtrip_cell_centred(tmp_path):
-    from unicodes.io import read_block_data, read_grid, write_block_data
+    from unicodes.io import read_block_data, write_block_data
 
     xyz, conn = _unit_square_mesh()
     values = np.array([[1.5, 10.0], [2.5, 20.0]])
