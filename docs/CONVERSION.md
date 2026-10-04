@@ -5,7 +5,7 @@ ported. Library code is under `src/unicodes/`; scripts (homework, labs, exams, p
 `examples/<course>/`. Generated from the docstrings of the Python files plus a table of rules, so a file
 listed against several Python files is mentioned in each.
 
-Totals: 812 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 125 other people's or third-party code.
+Totals: 838 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 99 other people's or third-party code.
 
 Corrections made to the originals are listed in the docstring of each Python function or script.
 
@@ -937,31 +937,31 @@ Corrections made to the originals are listed in the docstring of each Python fun
 
 | MATLAB | Python / note |
 |---|---|
-| `jacksons 211 programs/AE360_Torok_HW2.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/AE360_Torok_HW4.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/AE360_Torok_HW6.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/AE360_Torok_HW9.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/CompiledCode771.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/HW5 Functions/Torok_Jackson_HW5_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/HW5 Functions/distance.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/HW5 Functions/height.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/HW5 Functions/num_grain.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/HW5 Functions/plotndfhs.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Matlab_Quiz5_Jackson_Torok.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_Exam2.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW10_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW1_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW2_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW3_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW4_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW6_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW7_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW8_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok_Jackson_HW9_MATLAB.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Torok__Jackson_Exam1.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Untitled.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/Untitled4.m` | Not ported: Jackson Torok's coursework (another student's code) |
-| `jacksons 211 programs/exam.m` | Not ported: Jackson Torok's coursework (another student's code) |
+| `jacksons 211 programs/AE360_Torok_HW2.m` | `examples/jackson_torok/ae360_hw02.py` |
+| `jacksons 211 programs/AE360_Torok_HW4.m` | `examples/jackson_torok/ae360_hw04.py` |
+| `jacksons 211 programs/AE360_Torok_HW6.m` | `examples/jackson_torok/ae360_hw06.py` |
+| `jacksons 211 programs/AE360_Torok_HW9.m` | `examples/jackson_torok/ae360_hw09.py` |
+| `jacksons 211 programs/CompiledCode771.m` | `examples/jackson_torok/rocket_propulsion_771.py` |
+| `jacksons 211 programs/HW5 Functions/Torok_Jackson_HW5_MATLAB.m` | `examples/jackson_torok/ae211_hw05.py` |
+| `jacksons 211 programs/HW5 Functions/distance.m` | `examples/jackson_torok/ae211_hw05.py` |
+| `jacksons 211 programs/HW5 Functions/height.m` | `examples/jackson_torok/ae211_hw05.py` |
+| `jacksons 211 programs/HW5 Functions/num_grain.m` | `examples/jackson_torok/ae211_hw05.py` |
+| `jacksons 211 programs/HW5 Functions/plotndfhs.m` | `examples/jackson_torok/ae211_hw05.py` |
+| `jacksons 211 programs/Matlab_Quiz5_Jackson_Torok.m` | `examples/jackson_torok/ae211_quiz5.py` |
+| `jacksons 211 programs/Torok_Jackson_Exam2.m` | `examples/jackson_torok/ae211_exams.py` |
+| `jacksons 211 programs/Torok_Jackson_HW10_MATLAB.m` | `examples/jackson_torok/ae211_hw10.py` |
+| `jacksons 211 programs/Torok_Jackson_HW1_MATLAB.m` | `examples/jackson_torok/ae211_hw01.py` |
+| `jacksons 211 programs/Torok_Jackson_HW2_MATLAB.m` | `examples/jackson_torok/ae211_hw02.py` |
+| `jacksons 211 programs/Torok_Jackson_HW3_MATLAB.m` | `examples/jackson_torok/ae211_hw03.py` |
+| `jacksons 211 programs/Torok_Jackson_HW4_MATLAB.m` | `examples/jackson_torok/ae211_hw04.py` |
+| `jacksons 211 programs/Torok_Jackson_HW6_MATLAB.m` | `examples/jackson_torok/ae211_hw06.py` |
+| `jacksons 211 programs/Torok_Jackson_HW7_MATLAB.m` | `examples/jackson_torok/ae211_hw07.py` |
+| `jacksons 211 programs/Torok_Jackson_HW8_MATLAB.m` | `examples/jackson_torok/ae211_hw08.py` |
+| `jacksons 211 programs/Torok_Jackson_HW9_MATLAB.m` | `examples/jackson_torok/ae211_hw09.py` |
+| `jacksons 211 programs/Torok__Jackson_Exam1.m` | `examples/jackson_torok/ae211_exams.py` |
+| `jacksons 211 programs/Untitled.m` | `examples/jackson_torok/intercept_game.py` |
+| `jacksons 211 programs/Untitled4.m` | `examples/jackson_torok/ae211_quiz5.py` |
+| `jacksons 211 programs/exam.m` | `examples/jackson_torok/ae211_exams.py` |
 
 ## sample_code
 
@@ -1014,13 +1014,13 @@ Corrections made to the originals are listed in the docstring of each Python fun
 
 | MATLAB | Python / note |
 |---|---|
-| `spring 2023/AE 573/EXAM_1_simple.mlx` | `examples/ae573_propulsion/exam_1_simple.py` |
+| `spring 2023/AE 573/EXAM_1_simple.mlx` | `examples/ae573_propulsion/exam_1_simple.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/Exam_1.mlx` | Not ported: unfilled exam template (all known values blank); the same separate-exhaust turbofan with values is examples/ae573_propulsion/pratice_quiz_turbofan.py |
-| `spring 2023/AE 573/Exam_2_part_1.mlx` | `examples/ae573_propulsion/exam_2_part_1.py` |
+| `spring 2023/AE 573/Exam_2_part_1.mlx` | `examples/ae573_propulsion/exam_2_part_1.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/Exam_2_part_2.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
-| `spring 2023/AE 573/Exam_2_part_3.mlx` | `examples/ae573_propulsion/exam_2_part_3.py` |
+| `spring 2023/AE 573/Exam_2_part_3.mlx` | `examples/ae573_propulsion/exam_2_part_3.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/FinalExam_1-DESKTOP-BJID2FH.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
-| `spring 2023/AE 573/FinalExam_1.mlx` | `examples/ae573_propulsion/finalexam_1.py` |
+| `spring 2023/AE 573/FinalExam_1.mlx` | `examples/ae573_propulsion/finalexam_1.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/FinalExam_1_v0.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
 | `spring 2023/AE 573/FinalExam_1_v1.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
 | `spring 2023/AE 573/FinalExam_1_v2.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
@@ -1028,27 +1028,27 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `spring 2023/AE 573/FinalExam_1_v4.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
 | `spring 2023/AE 573/FinalExam_1_v5.mlx` | Drafts of FinalExam_1: examples/ae573_propulsion/finalexam_1.py |
 | `spring 2023/AE 573/FinalExam_2.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
-| `spring 2023/AE 573/FinalExam_3.mlx` | `examples/ae573_propulsion/finalexam_3.py` |
+| `spring 2023/AE 573/FinalExam_3.mlx` | `examples/ae573_propulsion/finalexam_3.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/FinalExam_3_v0.mlx` | Draft of FinalExam_3: examples/ae573_propulsion/finalexam_3.py |
 | `spring 2023/AE 573/GasLaw.m` | `src/unicodes/thermo/gas_law.py` |
 | `spring 2023/AE 573/GasLawHW18.m` | `examples/ae573_propulsion/thermo_hw18.py` |
 | `spring 2023/AE 573/GasLaw_Test.mlx` | `examples/ae573_propulsion/thermo_hw18.py` |
-| `spring 2023/AE 573/HW_10.mlx` | `examples/ae573_propulsion/hw_10.py` |
+| `spring 2023/AE 573/HW_10.mlx` | `examples/ae573_propulsion/hw_10.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/HW_15_diffusers.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
 | `spring 2023/AE 573/HW_2.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
 | `spring 2023/AE 573/HW_3.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
 | `spring 2023/AE 573/HW_4.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
-| `spring 2023/AE 573/HW_7.mlx` | `examples/ae573_propulsion/hw_7.py` |
-| `spring 2023/AE 573/HW_8_problem_2.mlx` | `examples/ae573_propulsion/hw_8_problem_2.py` |
+| `spring 2023/AE 573/HW_7.mlx` | `examples/ae573_propulsion/hw_7.py`, `examples/ae573_propulsion/hw_8_problem_2.py`, `src/unicodes/propulsion_cycles.py` |
+| `spring 2023/AE 573/HW_8_problem_2.mlx` | `examples/ae573_propulsion/hw_8_problem_2.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/H_8_part_1.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
 | `spring 2023/AE 573/H_8_part_2.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
-| `spring 2023/AE 573/H_8_part_3.mlx` | `examples/ae573_propulsion/h_8_part_3.py` |
-| `spring 2023/AE 573/HomeWork.mlx` | `examples/ae573_propulsion/homework.py` |
+| `spring 2023/AE 573/H_8_part_3.mlx` | `examples/ae573_propulsion/h_8_part_3.py`, `src/unicodes/propulsion_cycles.py` |
+| `spring 2023/AE 573/HomeWork.mlx` | `examples/ae573_propulsion/homework.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/InletEntropyRiseNondimensional.mlx` | src/unicodes/gasdynamics.py (`inlet_*`) |
 | `spring 2023/AE 573/Inlet_Total_Pressure_Recovery_Relation.m` | src/unicodes/thermo/gas_law.py (`Relation`, `solve_relations`) |
 | `spring 2023/AE 573/Inlet_Total_Pressure_Recovery_relation.mlx` | src/unicodes/thermo/gas_law.py (`Relation`, `solve_relations`) |
-| `spring 2023/AE 573/Pratice_quiz_turbofan.mlx` | `examples/ae573_propulsion/pratice_quiz_turbofan.py` |
-| `spring 2023/AE 573/Quiz_2.mlx` | `examples/ae573_propulsion/quiz_2.py` |
+| `spring 2023/AE 573/Pratice_quiz_turbofan.mlx` | `examples/ae573_propulsion/pratice_quiz_turbofan.py`, `src/unicodes/propulsion_cycles.py` |
+| `spring 2023/AE 573/Quiz_2.mlx` | `examples/ae573_propulsion/quiz_2.py`, `src/unicodes/propulsion_cycles.py` |
 | `spring 2023/AE 573/Relation.m` | `src/unicodes/thermo/gas_law.py` |
 | `spring 2023/AE 573/RelationV0.m` | src/unicodes/thermo/gas_law.py (`Relation`, `solve_relations`) |
 | `spring 2023/AE 573/Relation_Solver.mlx` | src/unicodes/thermo/gas_law.py (`Relation`, `solve_relations`) |
@@ -1079,7 +1079,7 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `spring 2023/AE 573/obliqueShockProperties.mlx` | `src/unicodes/gasdynamics.py` |
 | `spring 2023/AE 573/relation_test.mlx` | src/unicodes/thermo/gas_law.py (`Relation`, `solve_relations`) |
 | `spring 2023/AE 573/sigmafromThetaTropo.mlx` | src/unicodes/atmosphere.py |
-| `spring 2023/AE 573/solveRelations.mlx` | `examples/ae573_propulsion/exam_1_simple.py`, `examples/ae573_propulsion/exam_2_part_1.py`, `examples/ae573_propulsion/exam_2_part_3.py`, `examples/ae573_propulsion/finalexam_1.py`, `examples/ae573_propulsion/finalexam_3.py`, `examples/ae573_propulsion/h_8_part_3.py`, `examples/ae573_propulsion/homework.py`, `examples/ae573_propulsion/hw_10.py`, `examples/ae573_propulsion/hw_7.py`, `examples/ae573_propulsion/hw_8_problem_2.py`, `examples/ae573_propulsion/pratice_quiz_turbofan.py`, `examples/ae573_propulsion/quiz_2.py`, `src/unicodes/thermo/gas_law.py` |
+| `spring 2023/AE 573/solveRelations.mlx` | `src/unicodes/thermo/gas_law.py` |
 | `spring 2023/AE 573/totalPressureFromStaticAndMach.mlx` | `src/unicodes/gasdynamics.py` |
 
 ## spring 2023/EESC 316
@@ -1343,7 +1343,7 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `unsorted/DMD_simple_functions.mlx` | `examples/data_driven/dmd_simple_functions.py` |
 | `unsorted/DynamicModeDecomposer.m` | `examples/data_driven/dmd_simple_functions.py` |
 | `unsorted/InOutFormat.m` | src/unicodes/io/tecplot.py |
-| `unsorted/JacksonRocketPropullsionCompiledCode771.m` | Not ported: Jackson Torok's coursework (another student's code) |
+| `unsorted/JacksonRocketPropullsionCompiledCode771.m` | `examples/jackson_torok/rocket_propulsion_771.py` |
 | `unsorted/Lab_1.m.mlx` | Copy of AE 546 Lab 1: examples/ae546_aero_lab/lab1_pressure_distribution.py |
 | `unsorted/Logistic.mlx` | `examples/misc/small_scripts.py` |
 | `unsorted/OutputTecASCIIdata.m` | `src/unicodes/io/tecplot.py` |

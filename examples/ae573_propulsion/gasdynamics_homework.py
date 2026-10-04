@@ -55,5 +55,5 @@ print(f"Final exam 2: p1 = {p0 * float(r0.p0_p) / float(r1.p0_p):.1f} Pa, "
 print(f"Exam 2 part 2: normal Mach component {1.4 * np.sin(np.deg2rad(40)):.3f} (< 1: no oblique shock)")
 s = gd.oblique_shock(1.4, np.deg2rad(40), np.deg2rad(6))
 n = gd.normal_shock(1.1)
-print(f"Exam 2 part 2: oblique M1 = {float(s.M2):.4f}, pt ratio {float(s.p02_p01):.5f}; "
+print(f"Exam 2 part 2: M2 behind the oblique shock = {float(s.M2):.4f}, pt ratio {float(s.p02_p01):.5f}; "
       f"normal shock at M 1.1: M2 = {float(n.M2):.4f}, pt ratio {float(n.p02_p01):.5f}")
