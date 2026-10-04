@@ -5,6 +5,7 @@
 
 from . import advection, euler
 from .mesh import StructuredMesh2D
-from .solver2d import SteadyResult, residual, solve_steady
+from .navier_stokes import Viscosity
+from .solver2d import SteadyResult, residual, solve_steady, solve_unsteady
 
-__all__ = ["StructuredMesh2D", "SteadyResult", "advection", "euler", "residual", "solve_steady"]
+__all__ = ["StructuredMesh2D", "SteadyResult", "advection", "euler", "Viscosity", "residual", "solve_steady", "solve_unsteady"]

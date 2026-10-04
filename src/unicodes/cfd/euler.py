@@ -61,9 +61,10 @@ def normal_flux(Q, normal, gamma: float = 1.4) -> np.ndarray:
 def rusanov_flux(Q_L, Q_R, normal, gamma: float = 1.4) -> np.ndarray:
     """Rusanov (local Lax-Friedrichs) numerical flux across a face."""
     sL, sR = primitives(Q_L, gamma), primitives(Q_R, gamma)
-    Vn_avg = 0.5 * (np.sum(sL.velocity * normal, -1) + np.sum(sR.velocity * normal, -1))
-    c_avg = 0.5 * (sL.c + sR.c)
-    dissipation = 0.5 * (np.abs(Vn_avg) + c_avg)[..., None] * (np.asarray(Q_R) - np.asarray(Q_L))
+    # Largest wave speed of the two states. (The MATLAB used |Vn| + c of the averaged
+    # state, which can under-estimate it across strong shocks and lose stability at second order.)
+    lam = np.maximum(np.abs(np.sum(sL.velocity * normal, -1)) + sL.c, np.abs(np.sum(sR.velocity * normal, -1)) + sR.c)
+    dissipation = 0.5 * lam[..., None] * (np.asarray(Q_R) - np.asarray(Q_L))
     return 0.5 * (normal_flux(Q_L, normal, gamma) + normal_flux(Q_R, normal, gamma)) - dissipation
 
 
@@ -78,20 +79,40 @@ def minmod_slope(Q, axis: int) -> np.ndarray:
     return np.moveaxis(slope, 0, axis)
 
 
-def reconstruct(Q, axis: int, order: int = 2):
+def _to_primitive(Q, gamma):
+    s = primitives(Q, gamma)
+    return np.concatenate([s.rho[..., None], s.velocity, s.p[..., None]], axis=-1)
+
+
+def _to_conserved(W, gamma):
+    return conserved(W[..., 0], W[..., 1:-1], W[..., -1], gamma)
+
+
+def reconstruct(Q, axis: int, order: int = 2, gamma: float = 1.4):
     """Left and right states at the interior faces along ``axis``.
 
     For ``n`` cells returns arrays for the ``n-1`` interior faces. Cells
     next to the boundary fall back to first order, as in the MATLAB.
+
+    Second order reconstructs the primitive variables (rho, velocity, p)
+    with minmod-limited slopes and falls back to first order on any face
+    where the reconstructed density or pressure would not be positive. The
+    MATLAB limited the conserved variables, which can produce negative
+    pressures behind strong shocks (the Mach-5 blunt body of project 4
+    diverged that way).
     """
     Q = np.moveaxis(np.asarray(Q, dtype=float), axis, 0)
     left = Q[:-1].copy()  # state on the low side of each face
     right = Q[1:].copy()  # state on the high side
-    if order == 2:
-        slope = np.moveaxis(minmod_slope(np.moveaxis(Q, 0, axis), axis), axis, 0)
-        left[1:] = Q[1:-1] + 0.5 * slope
-        right[:-1] = Q[1:-1] - 0.5 * slope
-    elif order != 1:
+    if order == 2 and Q.shape[0] > 2:
+        W = _to_primitive(Q, gamma)
+        slope = minmod_slope(W, 0)
+        WL = W[1:-1] + 0.5 * slope  # right face of interior cells
+        WR = W[1:-1] - 0.5 * slope  # left face of interior cells
+        ok = (WL[..., 0] > 0) & (WL[..., -1] > 0) & (WR[..., 0] > 0) & (WR[..., -1] > 0)
+        left[1:] = np.where(ok[..., None], _to_conserved(np.where(ok[..., None], WL, W[1:-1]), gamma), Q[1:-1])
+        right[:-1] = np.where(ok[..., None], _to_conserved(np.where(ok[..., None], WR, W[1:-1]), gamma), Q[1:-1])
+    elif order not in (1, 2):
         raise ValueError(f"order {order} not supported")
     return np.moveaxis(left, 0, axis), np.moveaxis(right, 0, axis)
 

@@ -7,9 +7,12 @@ the outer boundary, symmetry along y = 0 and supersonic outflow at the far
 end. (``configure_parameters_and_BC`` listed the inflow on ``j_0`` and the
 wall on ``j_n``; with the project 3 grid, where ``j = 0`` is the body,
 that is the other way round.) The saved MATLAB configuration ran first
-order; the second-order (minmod on conserved variables) option diverges
-on this Mach-5 blunt-body case, even when restarted from the converged
-first-order solution. Rusanov fluxes, SSP-RK2 with
+order. Second order (``--order 2``) reconstructs the primitive variables with
+minmod and falls back to first order on any face that would get a
+non-positive density or pressure; limiting the conserved variables, as the
+MATLAB did, diverges on this Mach-5 case. On the 41 x 21 grid the
+stagnation pressure is 30.8 (first order) and 31.8 (second order) against
+32.65 from the Rayleigh pitot formula. Rusanov fluxes, SSP-RK2 with
 local time steps, CFL 0.8. The grid is rebuilt as in ``project3_mesh.py``
 or read from a saved ``.npz``/``.mat`` holding ``Mesh``::
 
