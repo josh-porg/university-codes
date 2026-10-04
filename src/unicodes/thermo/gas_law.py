@@ -24,8 +24,18 @@ def _sympy():
     return sympy
 
 
+_FUNCTIONS = {"sqrt", "exp", "log", "sin", "cos", "tan", "asin", "acos", "atan", "sinh", "cosh", "tanh", "pi", "E"}
+
+
 def _parse_equation(text: str, local=None):
+    """Expression equal to zero for ``lhs = rhs``. MATLAB ``^`` is accepted, and every identifier
+    that is not a standard function is a plain symbol (so ``gamma`` or ``beta`` are not sympy functions)."""
+    import re
+
     sp = _sympy()
+    text = text.replace("^", "**")
+    names = set(re.findall(r"[A-Za-z_]\w*", text)) - _FUNCTIONS
+    local = {**{n: sp.Symbol(n) for n in names}, **(local or {})}
     lhs, _, rhs = text.replace("==", "=").partition("=")
     expr = sp.sympify(lhs, locals=local)
     if rhs:
@@ -160,3 +170,107 @@ class Relation:
             raise ValueError(f"Exactly one unknown required, got {unknown}")
         expr = self.expression.subs({self.symbols[n]: val for n, val in known.items()})
         return sp.solve(expr, self.symbols[unknown[0]])
+
+    def solve_numeric(self, **known) -> list[float]:
+        """Real roots for the one unknown, found numerically.
+
+        Polynomials of degree <= 2 are solved exactly; anything else is
+        scanned on a logarithmic grid (both signs unless the variable is
+        assumed positive) and every sign change refined with ``brentq``.
+        Much faster than :meth:`solve` for relations with non-integer powers.
+        """
+        import numpy as np
+        from scipy.optimize import brentq
+
+        sp = _sympy()
+        unknown = [n for n in self.symbols if n not in known]
+        if len(unknown) != 1:
+            raise ValueError(f"Exactly one unknown required, got {unknown}")
+        x = self.symbols[unknown[0]]
+        expr = self.expression.subs({self.symbols[n]: val for n, val in known.items()})
+        try:
+            poly = sp.Poly(expr, x)
+            if poly.degree() <= 2:
+                out = []
+                for r in np.roots([complex(c) for c in poly.all_coeffs()]):
+                    if abs(r.imag) < 1e-9 * max(1, abs(r)):
+                        out.append(float(r.real))
+                return out
+        except (sp.PolynomialError, sp.GeneratorsNeeded, TypeError, ValueError):
+            pass
+        f = sp.lambdify(x, expr, "numpy")
+
+        def fr(z):
+            with np.errstate(all="ignore"):
+                v = complex(f(z))
+            return v.real if abs(v.imag) < 1e-12 * max(1.0, abs(v.real)) else np.nan
+
+        mags = np.logspace(-10, 10, 2001)
+        grid = mags if x.is_positive else np.concatenate([-mags[::-1], [0.0], mags])
+        vals = np.array([fr(g) for g in grid])
+        roots = []
+        ok = np.isfinite(vals[:-1]) & np.isfinite(vals[1:]) & (np.sign(vals[:-1]) != np.sign(vals[1:]))
+        for i in np.flatnonzero(ok):
+            if vals[i] == 0:
+                roots.append(float(grid[i]))
+                continue
+            r = brentq(fr, grid[i], grid[i + 1], xtol=1e-14, rtol=1e-13)
+            if abs(fr(r)) < 1e-6 * max(1.0, abs(vals[i]), abs(vals[i + 1])):  # reject poles
+                roots.append(float(r))
+        return roots
+
+
+POSITIVE_PREFIXES = ("M_", "p_", "pt_", "T_", "Tt_", "a_", "rho_")
+
+
+def expand_stations(templates: Iterable[str], stations: Iterable, token: str = "_st") -> list[str]:
+    """Repeat each template equation for every station, replacing ``token`` (``equationRepeater``)."""
+    return [t.replace(token, f"_{s}") for t in templates for s in stations]
+
+
+def _is_positive(name, prefixes):
+    return name == "alpha" or any(name.startswith(p) for p in prefixes)
+
+
+def build_relations(equations: Iterable[str], positive_prefixes=POSITIVE_PREFIXES) -> list[Relation]:
+    """Relations with Mach numbers, pressures, temperatures, speeds of sound and densities assumed positive,
+    as the AE 573 scripts set up through their assumption dictionaries."""
+    out = []
+    for eq in equations:
+        names = {s.name for s in _parse_equation(eq).free_symbols}
+        out.append(Relation(eq, positive=[n for n in names if _is_positive(n, positive_prefixes)]))
+    return out
+
+
+def solve_relations(relations: Iterable[Relation], knowns: dict, verbose: bool = False) -> dict:
+    """Repeatedly solve every relation that has exactly one unknown until nothing changes (``solveRelations``).
+
+    ``knowns`` maps names to values (``None`` or NaN = unknown). Real roots
+    are kept; with several, the first positive one is taken. Relations that
+    fail to solve are skipped, as the MATLAB caught and reported the error.
+    """
+    import math
+
+    values = {k: v for k, v in knowns.items() if v is not None and not (isinstance(v, float) and math.isnan(v))}
+    relations = list(relations)
+    changed = True
+    while changed:
+        changed = False
+        for rel in relations:
+            unknown = [n for n in rel.variables if n not in values]
+            if len(unknown) != 1:
+                continue
+            try:
+                real = rel.solve_numeric(**{n: values[n] for n in rel.variables if n in values})
+            except Exception as exc:  # noqa: BLE001
+                if verbose:
+                    print(f"could not solve {rel.equation_text} for {unknown[0]}: {exc}")
+                continue
+            if not real:
+                continue
+            pos = [r for r in real if r > 0]
+            values[unknown[0]] = (pos or real)[0]
+            changed = True
+            if verbose:
+                print(f"solved {unknown[0]} = {values[unknown[0]]:g}")
+    return values
