@@ -5,7 +5,7 @@ ported. Library code is under `src/unicodes/`; scripts (homework, labs, exams, p
 `examples/<course>/`. Generated from the docstrings of the Python files plus a table of rules, so a file
 listed against several Python files is mentioned in each.
 
-Totals: 838 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 99 other people's or third-party code.
+Totals: 865 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 72 other people's or third-party code.
 
 Corrections made to the originals are listed in the docstring of each Python function or script.
 
@@ -149,33 +149,33 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | MATLAB | Python / note |
 |---|---|
 | `AE 571/final project/AE571_FinalProject_Team8.m` | `examples/ae571_combustion/final_project.py` |
-| `AE 571/final project/other teams codes/AE571_FinalProject_Group9.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/AE_571_Group7_Final_Code.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/Group3_AE571_Final_Project.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_FinalProject_PartI.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_FinalProject_PartII.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/atombalancefinal.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculator2.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculator2H2.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculatorfinal.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculatorfinalH2.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/specificheats.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/OneDrive_2022-12-16/Team 2/AE571_Group2_Final_Code.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 10/Part_I.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 10/Part_II.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 4/Team 4/AE_571_Final_Project_Code.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/AE571_FinalProject_Part1.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/AE571_Part1_Calculators.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/AE571_FinalProject_Part2_Complete.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/AtomBalanceLab1.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorAir.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorFuel.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorO2.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorProducts.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 6/Team 6/Gasoline.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 6/Team 6/Hydrogen.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 6/Team 6/atombalance.m` | Not ported: other teams' AE 571 project code |
-| `AE 571/final project/other teams codes/team 6/Team 6/propertycalculator.m` | Not ported: other teams' AE 571 project code |
+| `AE 571/final project/other teams codes/AE571_FinalProject_Group9.m` | `examples/ae571_combustion/other_teams/group9.py` |
+| `AE 571/final project/other teams codes/AE_571_Group7_Final_Code.m` | `examples/ae571_combustion/other_teams/group7.py` |
+| `AE 571/final project/other teams codes/Group3_AE571_Final_Project.m` | `examples/ae571_combustion/other_teams/group3.py` |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_FinalProject_PartI.m` | `examples/ae571_combustion/other_teams/onedrive_team.py` |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_FinalProject_PartII.m` | examples/ae571_combustion/other_teams/onedrive_team.py |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/atombalancefinal.m` | `examples/ae571_combustion/other_teams/onedrive_team.py` |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculator2.m` | `examples/ae571_combustion/other_teams/onedrive_team.py` |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculator2H2.m` | examples/ae571_combustion/other_teams/onedrive_team.py |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculatorfinal.m` | `examples/ae571_combustion/other_teams/onedrive_team.py` |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/enthalpycalculatorfinalH2.m` | examples/ae571_combustion/other_teams/onedrive_team.py |
+| `AE 571/final project/other teams codes/OneDrive_1_12-16-2022/AE571_functions/specificheats.m` | `examples/ae571_combustion/other_teams/onedrive_team.py` |
+| `AE 571/final project/other teams codes/OneDrive_2022-12-16/Team 2/AE571_Group2_Final_Code.m` | `examples/ae571_combustion/other_teams/team2.py` |
+| `AE 571/final project/other teams codes/team 10/Part_I.m` | `examples/ae571_combustion/other_teams/team10.py` |
+| `AE 571/final project/other teams codes/team 10/Part_II.m` | `examples/ae571_combustion/other_teams/team10.py` |
+| `AE 571/final project/other teams codes/team 4/Team 4/AE_571_Final_Project_Code.m` | `examples/ae571_combustion/other_teams/team4.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/AE571_FinalProject_Part1.m` | `examples/ae571_combustion/other_teams/team5.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/AE571_Part1_Calculators.m` | `examples/ae571_combustion/other_teams/team5.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/AE571_FinalProject_Part2_Complete.m` | `examples/ae571_combustion/other_teams/team5.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/AtomBalanceLab1.m` | `examples/ae571_combustion/other_teams/team5.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorAir.m` | `examples/ae571_combustion/other_teams/team5.py` |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorFuel.m` | examples/ae571_combustion/other_teams/team5.py |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorO2.m` | examples/ae571_combustion/other_teams/team5.py |
+| `AE 571/final project/other teams codes/team 5/Corrected Code that works/Part 2/enthalpycalculatorProducts.m` | examples/ae571_combustion/other_teams/team5.py |
+| `AE 571/final project/other teams codes/team 6/Team 6/Gasoline.m` | `examples/ae571_combustion/other_teams/team6.py` |
+| `AE 571/final project/other teams codes/team 6/Team 6/Hydrogen.m` | `examples/ae571_combustion/other_teams/team6.py` |
+| `AE 571/final project/other teams codes/team 6/Team 6/atombalance.m` | `examples/ae571_combustion/other_teams/team6.py` |
+| `AE 571/final project/other teams codes/team 6/Team 6/propertycalculator.m` | `examples/ae571_combustion/other_teams/team6.py` |
 | `AE 571/final project/poznanski_main.mlx` | `examples/ae571_combustion/final_project.py` |
 | `AE 571/final project/team_code.mlx` | `examples/ae571_combustion/final_project.py` |
 | `AE 571/getAdiabFlameTemp.mlx` | `examples/ae571_combustion/lab1_flame_temperature.py` |

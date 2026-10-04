@@ -69,7 +69,8 @@ src/unicodes/              the library: one module or subpackage per topic
                            mixed exhaust), turboprop, nozzles, compressor stage
     remote_sensing.py      Planck/Wien, diffraction-limited optics, SAR radar equation
     structures/            wing-box stresses and buckling, beam finite elements
-    thermo/                combustion and flame temperature, equations of state, relation solver
+    thermo/                combustion and flame temperature, fuel-air dual cycle, equations of
+                           state, relation solver
     units.py               unit conversion constants
 examples/<course>/         the homework, labs, exams and projects as runnable scripts
 docs/CONVERSION.md         every MATLAB file and where its port lives (or why it was not ported)
