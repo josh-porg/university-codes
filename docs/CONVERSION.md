@@ -5,7 +5,7 @@ ported. Library code is under `src/unicodes/`; scripts (homework, labs, exams, p
 `examples/<course>/`. Generated from the docstrings of the Python files plus a table of rules, so a file
 listed against several Python files is mentioned in each.
 
-Totals: 917 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 20 other people's or third-party code.
+Totals: 937 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work.
 
 Corrections made to the originals are listed in the docstring of each Python function or script.
 
@@ -483,28 +483,28 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `DMD/OutputTecASCIIdata.m` | `src/unicodes/io/tecplot.py` |
 | `DMD/PSD_2025.mlx` | `examples/data_driven/dmd_spectrum.py`, `src/unicodes/decomposition/spectral.py` |
 | `DMD/SINDy/Example Code/polynomial_generation_experiment.mlx` | Superseded by `src/unicodes/decomposition/sindy.py` (`library`) |
-| `DMD/SINDy/Example Code/sparsedynamics/EX01a_Linear2D.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX01b_Cubic2D.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX01c_Linear3D.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX02_Lorenz.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX02_LorenzTVDiff.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX03_Cylinder.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX04a_LogisticMap.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX04b_Hopf_TVRegDiff.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EX05_LorenzTimeDelay.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/EXappA_Sine.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX01a_Linear2D.m` | `examples/sindy_examples/ex01_linear_cubic.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX01b_Cubic2D.m` | `examples/sindy_examples/ex01_linear_cubic.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX01c_Linear3D.m` | `examples/sindy_examples/ex01_linear_cubic.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX02_Lorenz.m` | `examples/sindy_examples/ex02_lorenz.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX02_LorenzTVDiff.m` | `examples/sindy_examples/ex02_lorenz.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX03_Cylinder.m` | `examples/sindy_examples/ex03_cylinder.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX04a_LogisticMap.m` | `examples/sindy_examples/ex04_logistic_hopf.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX04b_Hopf_TVRegDiff.m` | `examples/sindy_examples/ex04_logistic_hopf.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EX05_LorenzTimeDelay.m` | `examples/sindy_examples/ex05_lorenz_time_delay.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/EXappA_Sine.m` | `examples/sindy_examples/exappA_sine.py` |
 | `DMD/SINDy/Example Code/sparsedynamics/utils/InterpretResults.mlx` | `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/TVRegDiff.m` | `examples/data_driven/sindy_examples.py`, `src/unicodes/numerics.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/color_line3.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/TVRegDiff.m` | `examples/data_driven/sindy_examples.py`, `examples/sindy_examples/ex02_lorenz.py`, `src/unicodes/numerics.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/color_line3.m` | `examples/sindy_examples/common.py` |
 | `DMD/SINDy/Example Code/sparsedynamics/utils/generateLibraryList.mlx` | `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/hopf.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/logistic.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/lorenz.m` | `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/poolData.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/poolDataLIST.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/sparseGalerkin.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/sparseGalerkinDiscrete.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/Example Code/sparsedynamics/utils/sparsifyDynamics.m` | Not ported: Brunton, Proctor & Kutz SINDy example code (third-party); see `src/unicodes/decomposition/sindy.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/hopf.m` | `examples/sindy_examples/ex04_logistic_hopf.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/logistic.m` | `examples/sindy_examples/ex04_logistic_hopf.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/lorenz.m` | `examples/sindy_examples/ex02_lorenz.py`, `src/unicodes/decomposition/sindy.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/poolData.m` | `examples/sindy_examples/common.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/poolDataLIST.m` | `examples/sindy_examples/common.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/sparseGalerkin.m` | `examples/sindy_examples/common.py` |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/sparseGalerkinDiscrete.m` | examples/sindy_examples/ex04_logistic_hopf.py (the identified logistic map is iterated directly) |
+| `DMD/SINDy/Example Code/sparsedynamics/utils/sparsifyDynamics.m` | `examples/sindy_examples/common.py` |
 | `DMD/SINDy/InterpretResults.mlx` | `src/unicodes/decomposition/sindy.py` |
 | `DMD/SINDy/SINDyGalerkin.mlx` | `src/unicodes/decomposition/sindy.py` |
 | `DMD/SINDy/SINDy_Gluhareff_v_0.mlx` | `examples/data_driven/sindy_gluhareff.py` |
@@ -517,10 +517,10 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `DMD/SINDy/STLS.mlx` | `src/unicodes/decomposition/sindy.py` |
 | `DMD/SINDy/STR.mlx` | Unfinished STRidge attempt; src/unicodes/decomposition/sindy.py (`stridge`) |
 | `DMD/SINDy/STRidge.mlx` | `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/TVRegDiff.m` | `examples/data_driven/sindy_examples.py`, `src/unicodes/numerics.py` |
+| `DMD/SINDy/TVRegDiff.m` | `examples/data_driven/sindy_examples.py`, `examples/sindy_examples/ex02_lorenz.py`, `src/unicodes/numerics.py` |
 | `DMD/SINDy/generateLibrary.mlx` | `src/unicodes/decomposition/sindy.py` |
 | `DMD/SINDy/generateLibraryList.mlx` | `src/unicodes/decomposition/sindy.py` |
-| `DMD/SINDy/lorenz.mlx` | `src/unicodes/decomposition/sindy.py` |
+| `DMD/SINDy/lorenz.mlx` | `examples/sindy_examples/ex02_lorenz.py`, `src/unicodes/decomposition/sindy.py` |
 | `DMD/SINDy/simLorenz.mlx` | `examples/data_driven/sindy_examples.py` |
 | `DMD/SINDy/simVanderpol.mlx` | `examples/data_driven/sindy_examples.py` |
 | `DMD/SINDy/vanderpol.mlx` | `src/unicodes/decomposition/sindy.py` |
@@ -930,8 +930,8 @@ Corrections made to the originals are listed in the docstring of each Python fun
 
 | MATLAB | Python / note |
 |---|---|
-| `gluhareff pressure jet/Bramlette_ku_0099D_14625_DATA_2IR.m` | Not ported: R. Bramlette's dissertation data-reduction scripts (third-party) |
-| `gluhareff pressure jet/Bramlette_ku_0099D_14625_DATA_3gn.m` | Not ported: R. Bramlette's dissertation data-reduction scripts (third-party) |
+| `gluhareff pressure jet/Bramlette_ku_0099D_14625_DATA_2IR.m` | `examples/gluhareff_pressure_jet/ir_temperature_contours.py` |
+| `gluhareff pressure jet/Bramlette_ku_0099D_14625_DATA_3gn.m` | `examples/gluhareff_pressure_jet/pressure_jet_sizing.py` |
 
 ## jacksons 211 programs
 
@@ -1367,7 +1367,7 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `unsorted/imageVisualizationTest.mlx` | `examples/data_driven/pod_video.py` |
 | `unsorted/importGridFile.m` | `src/unicodes/io/tecplot.py` |
 | `unsorted/importTecASCIIdata.m` | `src/unicodes/io/tecplot.py` |
-| `unsorted/lorenz.mlx` | `src/unicodes/decomposition/sindy.py` |
+| `unsorted/lorenz.mlx` | `examples/sindy_examples/ex02_lorenz.py`, `src/unicodes/decomposition/sindy.py` |
 | `unsorted/messing_around_with_algebra.m` | Not ported: symbolic scratch work |
 | `unsorted/parallel_test.m` | Not ported: MATLAB timing / parpool experiments |
 | `unsorted/removemean.m` | src/unicodes/decomposition/snapshots.py |
