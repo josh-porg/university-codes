@@ -129,3 +129,84 @@ def propagate_kepler(r0, v0, dt, mu=MU_EARTH):
     E = solve_kepler(M, e)
     nu = np.arctan2(np.sqrt(1 - e**2) * np.sin(E), np.cos(E) - e)
     return coe_to_rv(OrbitalElements(coe.a, e, coe.i, coe.raan, coe.argp, nu), mu)
+
+
+R_EARTH = 6.3781e6  # m
+J2_EARTH = 1.081874e-3
+
+
+@dataclass(frozen=True)
+class HohmannTransfer:
+    dv1: float  # first burn (m/s)
+    dv2: float  # second burn incl. plane change (m/s)
+    time_of_flight: float  # s
+    energy: float  # specific energy of the transfer ellipse (J/kg)
+    a: float  # transfer semi-major axis (m)
+
+    @property
+    def dv_total(self) -> float:
+        return self.dv1 + self.dv2
+
+
+def hohmann(r0, rf, plane_change=0.0, mu=MU_EARTH) -> HohmannTransfer:
+    """Hohmann transfer between circular orbits, plane change done at the second burn (``hoffman``).
+
+    (The AE 360 ``driver`` passed plane changes through ``rad2deg``; they
+    are radians here.)
+    """
+    v0, vf = np.sqrt(mu / r0), np.sqrt(mu / rf)
+    at = (r0 + rf) / 2
+    vt1 = np.sqrt(mu * (2 / r0 - 1 / at))
+    vt2 = np.sqrt(mu * (2 / rf - 1 / at))
+    dv2 = np.sqrt(vt2**2 + vf**2 - 2 * vt2 * vf * np.cos(plane_change))
+    return HohmannTransfer(abs(vt1 - v0), dv2, np.pi * np.sqrt(at**3 / mu), -mu / (2 * at), at)
+
+
+def orbit_after_tangential_burn(r0, dv, mu=MU_EARTH):
+    """Apoapsis, semi-major axis and eccentricity after a prograde burn ``dv`` from a circular orbit (``getTranserOrbitHoffmamn``).
+
+    Escape (hyperbolic) burns give negative ``a`` and ``e > 1``.
+    """
+    vt = np.sqrt(mu / r0) + dv
+    a = -mu / (2 * (vt**2 / 2 - mu / r0))
+    e = 1 - r0 / a
+    return a * (1 + e), a, e
+
+
+@dataclass(frozen=True)
+class Rendezvous:
+    transfer: HohmannTransfer
+    n_interceptor: float  # rad/s
+    n_target: float
+    lead_angle: float  # target travel during the transfer (rad)
+    phase_at_burn: float  # required target lead at the first burn (rad)
+    wait_time: float  # s until that phase is reached
+
+
+def rendezvous(r0, rf, plane_change, phase_now, mu=MU_EARTH) -> Rendezvous:
+    """Coplanar Hohmann rendezvous timing (``rendezvous``): how long to wait before the first burn."""
+    t = hohmann(r0, rf, plane_change, mu)
+    n_i, n_t = np.sqrt(mu / r0**3), np.sqrt(mu / rf**3)
+    lead = n_t * t.time_of_flight
+    phase_f = np.pi - lead
+    wait = (phase_f - phase_now) / (n_t - n_i)
+    for k in (2 * np.pi, -2 * np.pi):
+        if wait >= 0:
+            break
+        wait = (phase_f - phase_now + k) / (n_t - n_i)
+    return Rendezvous(t, n_i, n_t, lead, phase_f, wait)
+
+
+def nodal_regression_rate(a, e, i, mu=MU_EARTH, R=R_EARTH, J2=J2_EARTH):
+    """J2 regression of the ascending node (rad/s) (AE 360 HW 5)."""
+    n = np.sqrt(mu / a**3)
+    p = a * (1 - e**2)
+    return -1.5 * n * R**2 * J2 / p**2 * np.cos(i)
+
+
+def time_to_true_anomaly(nu0, dt, a, e, mu=MU_EARTH):
+    """True anomaly after ``dt`` seconds from ``nu0`` on an ellipse (AE 360 HW 5)."""
+    E0 = np.arctan2(np.sqrt(1 - e**2) * np.sin(nu0), e + np.cos(nu0))
+    M = E0 - e * np.sin(E0) + np.sqrt(mu / a**3) * dt
+    E = solve_kepler(M, e)
+    return np.arctan2(np.sqrt(1 - e**2) * np.sin(E), np.cos(E) - e)
