@@ -1,79 +1,26 @@
-"""AE 573 final exam problem 3 (``FinalExam_3``).
+"""AE 573 final exam problem 3 (``FinalExam_3``): axial compressor stage, mean-line analysis.
 
-turbofan
+Mean radius 0.4 m, shaft speed 774.926 rad/s (U = 310 m/s), axial velocity
+150 m/s held through the stage, no inlet swirl (c1 = c3 = 150 m/s axial),
+degree of reaction 0.75, solidity 1.5, total-pressure loss coefficient
+0.05; inlet Tt1 = 287 K, pt1 = 100 kPa; gamma = 1.4, R = 287.
 
-Converted from the MATLAB equation lists: every relation with a single
-unknown is solved in turn (``solveRelations``) until nothing changes, then
-all solved quantities are printed.
+Errors in the MATLAB relations: ``Rdeg = 1 - (ct1-ct2)/2*U`` (should be
+``1 - (ct1 + ct2) / (2 U)``), ``a2 = (gamma*R*T2)`` without the square
+root, ``T3 = Tt3 - c3/2*cp`` (should be ``c3^2 / (2 cp)``),
+``Tt1/T1 = 1+(r-1)/2*M1^2`` used the radius ``r`` as gamma, and
+``M1 = Ccz1/(gamma*R*T)^.5`` used undefined names. The loss coefficient is
+applied to the rotor (relative frame) and to the stator.
 """
 
-import numpy as np  # noqa: F401
+from unicodes.propulsion_cycles import compressor_stage
 
-from unicodes.thermo import build_relations, expand_stations, solve_relations
-
-EQUATIONS = [
-    'M1 = v1/a1',
-    'M1 = Ccz1/(gamma*R*T)^.5',
-    'U = w*r',
-    'Rdeg = 1- (ct1-ct2)/2*U',
-    'Ct2 = 2*U*(1-Rdeg)',
-    'psi = ct2/U-ct1/U',
-    'Tt1/T1 = 1+(r-1)/2*M1^2',
-    'Tt2/Tt1 = 1 +U*(ct2-ct1)/(cp*Tt1)',
-    'T2 = Tt2-c2^2/(2*cp)',
-    'a2 = (gamma*R*T2)',
-    'M2=c2/a2',
-    'c3 = c2',
-    'Tt3 = Tt2',
-    'T3=Tt3-c3/2*cp',
-    'a3 = (gamma*R*T3)^.5',
-    'M3 = c3/a3',
-    'cp = cv + R',
-    'cp = gamma * R / (gamma - 1)',
-    'cv = R / (gamma - 1)',
-    'v_2 = c2',
-    'v_1 = cz1',
-    'M2= M_2',
-    'Tt2 =Tt_2',
-    'pt_1 = pt1',
-    'Tt1 =Tt_1',
-    'pt_2 = pt2',
-]
-
-# (templates, token, values): each template is repeated with ``token`` -> ``_<value>``
-REPEATED = [
-    (
-        [
-            'M_st = V_st / a_st',
-            'a_st = (gamma*R*T_st)^.5',
-            'pt_st / p_st = (1 + (gamma-1)/2 * M_st^2)^(gamma/(gamma-1))',
-            'rhot_st / rho_st = (1 + (gamma-1)/2 * M_st^2)^(1/(gamma-1))',
-            'Tt_st / T_st = (1 + (gamma-1)/2 * M_st^2)^1',
-            'p_st = rho_st * R * T_st',
-        ],
-        '_st',
-        [0, 1, 2, 3, 13, 19],
-    ),
-]
-
-K = {}
-K["r"] = .4
-K["cz1"] = 150
-K["sigmar"] = 1.5
-K["w"] = 774.926
-K["Rdeg"] = .75
-K["wtilde"] = .05
-K["gamma"] = 1.4
-K["gamma_1"] = 1.4
-K["gamma_2"] = 1.4
-K["R"] = 287
-K["Pt1"] = 100e3
-K["cx1"] = 150
-K["c3"] = 150
-K["Tt_1"] = 287
-
-equations = EQUATIONS + [e for t, token, vals in REPEATED for e in expand_stations(t, vals, token)]
-relations = build_relations(equations)
-solved = solve_relations(relations, K)
-for name in sorted(solved, key=str.lower):
-    print(f"{name:24s} {solved[name]:.6g}")
+for label, loss in (("isentropic", 0.0), ("with losses (omega = 0.05)", 0.05)):
+    s = compressor_stage(0.4, 774.926, 150.0, 0.75, 287.0, 100e3, 1.5, loss_rotor=loss, loss_stator=loss)
+    print(label)
+    print(f"  U = {s.U:.2f} m/s, ct1 = {s.ct1:.1f}, ct2 = {s.ct2:.2f} m/s, work = {s.work / 1e3:.3f} kJ/kg")
+    print(f"  beta1 = {s.beta1:.2f} deg, beta2 = {s.beta2:.2f} deg, alpha2 = {s.alpha2:.2f} deg")
+    print(f"  M1 = {s.M1:.4f}, M1 relative = {s.M1_relative:.4f}, M2 = {s.M2:.4f}, M3 = {s.M3:.4f}")
+    print(f"  Tt3 = {s.Tt3:.2f} K, pt3 = {s.pt3:.0f} Pa, stage pressure ratio = {s.pressure_ratio:.4f}, "
+          f"efficiency = {s.efficiency:.4f}")
+    print(f"  diffusion factors: rotor {s.diffusion_factor_rotor:.4f}, stator {s.diffusion_factor_stator:.4f}")

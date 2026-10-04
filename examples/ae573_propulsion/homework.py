@@ -1,136 +1,48 @@
-"""AE 573 turbojet cycle homework (``HomeWork``).
+"""AE 573 turbojet homework (``HomeWork``): performance from a measured fuel flow and exhaust velocity.
 
-Converted from the MATLAB equation lists: every relation with a single
-unknown is solved in turn (``solveRelations``) until nothing changes, then
-all solved quantities are printed.
+mdot_0 = 100 kg/s at M0 = 2, p0 = 20 kPa, T0 = 228 K; fuel 2.8 kg/s
+(Qr = 42 MJ/kg, eta_b = 0.995), fully expanded exhaust at V9 = 1200 m/s;
+pi_d = 0.9, pi_c = 12 (e_c = 0.9), pi_b = 0.95; cold gas gamma 1.4,
+cp 1004, hot gas gamma 1.33, cp 1156.
 
-Equations that do not parse (typos in the original) are left out: ``pt_7 =
-pi_ AB * pt_5``
+The MATLAB fed ~110 overlapping relations to the relation solver. Several
+were wrong (``pi_d = pt_0 / pt_2`` is inverted; ``tau_lambda = cp_4*Tt_4 /
+cp_0*T_0`` multiplies by T_0; the afterburner balance ``f_AB = (1+f)(ht_7 -
+ht_5) / (Qr_AB eta_AB - ht_7)`` with ``Qr_AB = 0``; ``eta_p = 2 / (1 + V_9 /
+V_0)`` only holds for f = 0) and the result depended on which relation the
+solver reached first. Here the quantities follow in order from the givens.
+The burner exit temperature comes from the fuel flow through the burner
+energy balance and the turbine exit temperature from the shaft power
+balance (eta_m = 1).
 """
 
-import numpy as np  # noqa: F401
+from unicodes.propulsion_cycles import AIR, COMBUSTION_GAS, compressor, freestream
 
-from unicodes.thermo import build_relations, expand_stations, solve_relations
+mdot0, M0, p0, T0 = 100.0, 2.0, 20e3, 228.0
+mdot_f, Qr, eta_b, V9 = 2.8, 42e6, 0.995, 1200.0
+pi_d, pi_c, e_c, pi_b = 0.9, 12.0, 0.9, 0.95
+c, t = AIR, COMBUSTION_GAS
+g0 = 9.81
 
-EQUATIONS = [
-    'Dram = mdot_0 * V_0',
-    'Fn = (mdot_0 + mdot_f) * V_9 - mdot_0 * V_0 + (p_9-p_0)*A_9',
-    'Fg = (mdot_0+mdot_f)*V_9 - mdot_0 * V_0',
-    'Fn = Fg - Dram',
-    'TSFC = mdot_f / Fn',
-    'TSFC = f / (Fn/mdot_0)',
-    'eta_th = DeltaKEdot / pth',
-    'pth = mdot_f * Qr + mdot_f_AB * Qr_AB',
-    'DeltaKEdot = (mdot_0 + mdot_f + mdot_f_AB) * V_9^2 / 2 - mdot_0 * V_0^2 /2',
-    'eta_p = Fn * V_0 / DeltaKEdot',
-    'eta_p = 2/(1+V_9/V_0)',
-    'f_AB = (1+f)*(ht_7-ht_5) / (Qr_AB * eta_AB - ht_7)',
-    'eta_p = (Fn/mdot_0)*V0 / ((1+f+f_AB)*V_9^2/2 - v_0^2/2)',
-    'Is = Fn/(mdot_f*g_0)',
-    'eta_o = (Fn/mdot_0)*V_0 / (f*Qr)',
-    'eta_o = (V_0/Qr) / TSFC',
-    'pi_n = ((pi_AB*pi_t*pi_b*pi_c*pi_d*pi_r*p_0/p_9)^((gamma-1)/gamma) - eta_n * ((pi_AB*pi_t*pi_b*pi_c*pi_d*pi_r*p_0/p_9)^((gamma-1)/gamma) - 1))^(-gamma/(gamma-1))',
-    'pi_d = pt_0 / pt_2',
-    'eta_d = ((pt_2/p_0)^((gamma_c-1)/gamma_c) -1) / (M_0^2*(gamma_c-1)/2)',
-    'pi_c = pt_3/pt_2',
-    'pi_b = pt_4 / pt_3',
-    'pi_AB = pt_7 / pt_5',
-    'pi_n = pt_9 / pt_7',
-    'pi_t = pt_5 / pt_4',
-    'pi_r = pt_0 / p_0',
-    'pi_r = (1+(gamma_c-1)/2*M_0^2)^(gamma_c/(gamma_c-1))',
-    'tau_r = Tt_0 / T_0',
-    'tau_r = 1 + (gamma_c-1)/2 *M_0^2',
-    'tau_d = Tt_2/Tt_0',
-    'tau_lambda = cp_4*Tt_4 / cp_0*T_0',
-    'eta_b = Qr_actual / Qr_ideal',
-    'eta_AB = Qr_AB_actual / Qr_AB_ideal',
-    'tau_lambda_AB = cp_AB*Tt_7 / cp_0*T_0',
-    'tau_n = Tt_9 / Tt_7',
-    'tau_c = Tt_3 / Tt_2',
-    'tau_t = Tt_5 / Tt_4',
-    'pi_c_optimum = ((tau_r + tau_lambda) / (2*tau_r))^(gamma/(gamma-1))',
-    'eta_d = (ht_2s/h_0 - 1) / (ht_2/h_0 - 1)',
-    'eta_d = (Tt_2s/T_0 - 1) / (ht_0/h_0 - 1)',
-    'eta_d = ((pt_2/p_0)^((gamma_c-1)/gamma_c) - 1) / (tau_r - 1)',
-    'tau_c = pi_c^((gamma-1)/(gamma*e_c))',
-    'P_r = mdot_t * (ht_2-ht_3)',
-    'F= Fn',
-    'gamma_0 = gamma_c',
-    'gamma_1 = gamma_c',
-    'gamma_2 = gamma_c',
-    'gamma_3 = gamma_c',
-    'gamma_4 = gamma_t',
-    'gamma_5 = gamma_t',
-    'gamma_6 = gamma_AB',
-    'gamma_7 = gamma_AB',
-    'gamma_8 = gamma_AB',
-    'gamma_9 = gamma_AB',
-    'cp_0 = cp_c',
-    'cp_1 = cp_c',
-    'cp_2 = cp_c',
-    'cp_3 = cp_c',
-    'cp_4 = cp_t',
-    'cp_5 = cp_t',
-    'cp_6 = cp_t',
-    'cp_7 = cp_AB',
-    'cp_8 = cp_AB',
-    'cp_9 = cp_AB',
-    'tau_d = 1',
-    'tau_n = 1',
-    'M_2 = ( ((gamma_c-1)*M_0^2+2) / (2*gamma_c*M_0^2-(gamma_c-1)) )^.5',
-    'rho_2 / rho_0 = ((gamma_c+1)*M_0^2) / (2 + (gamma_c-1)*M_0^2)',
-    'p_2 / p_0 = 1 + 2*gamma_c/(gamma_c+1) * (M_0^2-1)',
-    'T_2 / T_0 = (p_2 / p_0) / (rho_2 / rho_0)',
-    'pt_2 / pt_0 = (((gamma_c+1)*M_0^2) / ((gamma_c-1)*M_0^2+2))^(gamma_c/(gamma_c-1)) * ((gamma_c+1) / (2*gamma_c*M_0^2-(gamma_c-1)))^(1/(gamma_c-1))',
-    'Tt2 = Tt0',
-]
+V0, st0, tau_r, pi_r = freestream(M0, T0, p0, c)
+f = mdot_f / mdot0
+Fn = (mdot0 + mdot_f) * V9 - mdot0 * V0  # p9 = p0
+Dram = mdot0 * V0
+TSFC = mdot_f / Fn
+dKE = ((mdot0 + mdot_f) * V9**2 - mdot0 * V0**2) / 2
+eta_th = dKE / (mdot_f * Qr)
+eta_p = Fn * V0 / dKE
+pt2, Tt2 = st0.pt * pi_d, st0.Tt
+tau_c, eta_c = compressor(pi_c, e_c, c)
+Tt3, pt3 = Tt2 * tau_c, pt2 * pi_c
+Tt4 = (eta_b * f * Qr + c.cp * Tt3) / ((1 + f) * t.cp)  # (1+f) cp_t Tt4 - cp_c Tt3 = eta_b f Qr
+Tt5 = Tt4 - c.cp * (Tt3 - Tt2) / ((1 + f) * t.cp)
+P_compressor = mdot0 * c.cp * (Tt3 - Tt2)
 
-# (templates, token, values): each template is repeated with ``token`` -> ``_<value>``
-REPEATED = [
-    (
-        [
-            'M_st = V_st / a_st',
-            'a_st = (gamma_st*R*T_st)^.5',
-            'pt_st / p_st = (1 + (gamma_st-1)/2 * M_st^2)^(gamma_st/(gamma_st-1))',
-            'rhot_st / rho_st = (1 + (gamma_st-1)/2 * M_st^2)^(1/(gamma_st-1))',
-            'Tt_st / T_st = (1 + (gamma_st-1)/2 * M_st^2)^1',
-            'p_st = rho_st * R * T_st',
-        ],
-        '_st',
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    ),
-]
-
-K = {}
-K["mdot_0"] = 100
-K["M_0"] = 2
-K["p_0"] = 20e3
-K["T_0"] = 228
-K["gamma"] = 1.4
-K["R"] = 287
-K["mdot_f"] = 2.8
-K["Qr"] = 42000e3
-K["V_9"] = 1200
-K["p_9"] = K["p_0"]
-K["eta_b"] = .995
-K["pi_b"] = .95
-K["pi_d"] = .9
-K["pi_c"] = 12
-K["e_c"] = .9
-K["g_0"] = 9.81
-K["A_9"] = 1
-K["gamma_c"] = 1.4
-K["gamma_t"] = 1.33
-K["gamma_AB"] = 1.3
-K["cp_c"] = 1004
-K["cp_t"] = 1156
-K["cp_AB"] = 1234
-K["mdot_f_AB"] = 0
-K["Qr_AB"] = 0
-
-equations = EQUATIONS + [e for t, token, vals in REPEATED for e in expand_stations(t, vals, token)]
-relations = build_relations(equations)
-solved = solve_relations(relations, K)
-for name in sorted(solved, key=str.lower):
-    print(f"{name:24s} {solved[name]:.6g}")
+print(f"V0 = {V0:.2f} m/s, tau_r = {tau_r:.4f}, pi_r = {pi_r:.4f}, Tt0 = {st0.Tt:.2f} K, pt0 = {st0.pt:.0f} Pa")
+print(f"ram drag = {Dram / 1e3:.2f} kN, gross thrust = {(mdot0 + mdot_f) * V9 / 1e3:.2f} kN, Fn = {Fn / 1e3:.2f} kN")
+print(f"F/mdot0 = {Fn / mdot0:.2f} N s/kg, TSFC = {TSFC * 1e6:.3f} mg/(N s), Isp = {Fn / (mdot_f * g0):.1f} s")
+print(f"eta_th = {eta_th:.4f}, eta_p = {eta_p:.4f}, eta_o = {eta_th * eta_p:.4f}")
+print(f"pt2 = {pt2:.0f} Pa, Tt2 = {Tt2:.2f} K; compressor tau_c = {tau_c:.4f}, eta_c = {eta_c:.4f}")
+print(f"Tt3 = {Tt3:.2f} K, pt3 = {pt3:.0f} Pa, compressor power = {P_compressor / 1e6:.2f} MW")
+print(f"Tt4 = {Tt4:.2f} K (from the fuel flow), pt4 = {pt3 * pi_b:.0f} Pa, Tt5 = {Tt5:.2f} K")

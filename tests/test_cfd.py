@@ -58,3 +58,49 @@ def test_oblique_shock_pressure_ratio(order, rel):
     p = euler.primitives(result.Q).p
     wall_p = p[(mesh.centroid[:, 0, 0] > 0.6) & (mesh.centroid[:, 0, 0] < 1.0), 0]
     assert wall_p.mean() == pytest.approx(1.7066, rel=rel)
+
+
+def box_mesh(nx, ny, L=1.0, H=1.0):
+    x, y = np.linspace(0, L, nx + 1), np.linspace(0, H, ny + 1)
+    return StructuredMesh2D(np.stack(np.meshgrid(x, y, indexing="ij"), axis=-1))
+
+
+def test_viscous_terms_vanish_for_uniform_flow():
+    from unicodes.cfd import Viscosity
+
+    mesh = ramp_mesh(30, 20)
+    Q_in = freestream(2.0)
+    Q = np.broadcast_to(Q_in, mesh.shape + (4,)).copy()
+    bcs = {"i_min": ("inlet", Q_in), "i_max": "exit", "j_min": ("inlet", Q_in), "j_max": "exit"}
+    visc = Viscosity(mu_ref=0.01)
+    np.testing.assert_allclose(residual(mesh, Q, bcs, order=2, viscosity=visc), 0, atol=1e-10)
+
+
+def test_shear_wave_decays_at_the_viscous_rate():
+    # u = A cos(pi y / H) between slip walls decays as exp(-nu (pi / H)^2 t)
+    from unicodes.cfd import Viscosity, solve_unsteady
+
+    mesh = box_mesh(4, 40)
+    y = mesh.centroid[..., 1]
+    A, nu, t_end = 0.05, 0.05, 1.0
+    Q0 = euler.conserved(np.ones_like(y), np.stack([A * np.cos(np.pi * y), 0 * y], -1), np.ones_like(y) / GAMMA)
+    bcs = {"i_min": "exit", "i_max": "exit", "j_min": "symmetry", "j_max": "symmetry"}
+    visc = Viscosity(mu_ref=nu, T_ref=1 / GAMMA, omega=0.0)  # rho = 1, constant viscosity
+    out = solve_unsteady(mesh, Q0, bcs, t_end, order=2, cfl=0.4, viscosity=visc)
+    u = euler.primitives(out.Q).velocity[..., 0]
+    amplitude = np.sum(u * np.cos(np.pi * y)) / np.sum(np.cos(np.pi * y) ** 2)
+    assert out.time == pytest.approx(t_end)
+    assert amplitude / A == pytest.approx(np.exp(-nu * np.pi**2 * t_end), rel=0.02)
+
+
+def test_noslip_wall_ghost_reverses_velocity():
+    from unicodes.cfd.solver2d import _ghost
+
+    Q = euler.conserved(1.2, [3.0, -1.0], 2.0)[None, None]
+    faces = np.array([[[1.0, 0.0, 1.0]]])
+    g = euler.primitives(_ghost("noslip", Q, faces, GAMMA), GAMMA)
+    np.testing.assert_allclose(g.velocity, [[[-3.0, 1.0]]])
+    assert g.p.item() == pytest.approx(2.0) and g.rho.item() == pytest.approx(1.2)
+    gT = euler.primitives(_ghost(("noslip", 1.0), Q, faces, GAMMA), GAMMA)
+    T_cell = 2.0 / 1.2
+    assert (gT.p / gT.rho).item() == pytest.approx(2 * 1.0 - T_cell)  # wall temperature is the face average

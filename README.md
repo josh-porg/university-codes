@@ -65,6 +65,8 @@ src/unicodes/              the library: one module or subpackage per topic
                            annealing, line searches, benchmark functions
     orbital.py             two-body propagation, Kepler, orbital elements, transfers
     propulsion.py          rocket-assisted projectile record
+    propulsion_cycles.py   gas-turbine cycle analysis: turbojet/afterburner, turbofans (separate and
+                           mixed exhaust), turboprop, nozzles, compressor stage
     remote_sensing.py      Planck/Wien, diffraction-limited optics, SAR radar equation
     structures/            wing-box stresses and buckling, beam finite elements
     thermo/                combustion and flame temperature, equations of state, relation solver

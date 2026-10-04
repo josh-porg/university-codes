@@ -96,7 +96,7 @@ def local_time_step(mesh, face_data, cfl, gamma=1.4, global_step=False, Q=None, 
     if viscosity is not None:
         from .navier_stokes import viscous_time_step_denominator
 
-        denom = 2 * viscous_time_step_denominator(mesh, Q, viscosity, gamma)
+        denom = viscous_time_step_denominator(mesh, Q, viscosity, gamma)
     for axis, (L, R, faces) in enumerate(face_data):
         sL, sR = euler.primitives(L, gamma), euler.primitives(R, gamma)
         n = faces[..., 1:]

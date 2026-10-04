@@ -1015,7 +1015,7 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | MATLAB | Python / note |
 |---|---|
 | `spring 2023/AE 573/EXAM_1_simple.mlx` | `examples/ae573_propulsion/exam_1_simple.py` |
-| `spring 2023/AE 573/Exam_1.mlx` | Not ported: unfilled exam template (all known values blank); same equations with values in examples/ae573_propulsion/pratice_quiz_turbofan.py |
+| `spring 2023/AE 573/Exam_1.mlx` | Not ported: unfilled exam template (all known values blank); the same separate-exhaust turbofan with values is examples/ae573_propulsion/pratice_quiz_turbofan.py |
 | `spring 2023/AE 573/Exam_2_part_1.mlx` | `examples/ae573_propulsion/exam_2_part_1.py` |
 | `spring 2023/AE 573/Exam_2_part_2.mlx` | `examples/ae573_propulsion/gasdynamics_homework.py` |
 | `spring 2023/AE 573/Exam_2_part_3.mlx` | `examples/ae573_propulsion/exam_2_part_3.py` |
