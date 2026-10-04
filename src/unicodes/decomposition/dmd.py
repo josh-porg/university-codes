@@ -73,11 +73,28 @@ class DMD:
         U, S, V = U[:, :r], S[:r], Vh[:r].conj().T
         A_tilde = U.conj().T @ Xp @ V / S
         self.eigenvalues, W = np.linalg.eig(A_tilde)
+        self._A_tilde, self._W, self._S, self._V = A_tilde, W, S, V
         self.modes = Xp @ V / S @ W  # exact DMD modes
         self.omega = np.log(self.eigenvalues.astype(complex)) / dt
         self.amplitudes = np.linalg.pinv(self.modes) @ self.snapshots[:, 0]
 
         self.background_threshold = background_threshold
+
+    @property
+    def frequencies(self) -> np.ndarray:
+        """Mode frequencies in cycles per unit time, ``Im(omega) / 2 pi``."""
+        return self.omega.imag / (2 * np.pi)
+
+    def growth_adjusted_power(self) -> np.ndarray:
+        """Mode power from amplitudes fitted to every snapshot (Gluhareff ``DMD``).
+
+        ``b_t = (A_tilde W)^-1 Sigma V^*`` gives each mode's amplitude at every
+        snapshot; the power is ``2 |b_t|`` summed in the 2-norm over time.
+        Unlike ``2 |b|`` from the first snapshot alone, this is not biased by
+        strongly growing or decaying modes.
+        """
+        b_t = np.linalg.solve(self._A_tilde @ self._W, self._S[:, None] * self._V.conj().T)
+        return np.linalg.norm(2 * np.abs(b_t), axis=1)
 
     @property
     def time(self) -> np.ndarray:
@@ -133,3 +150,20 @@ class DMD:
         if self.spatial_shape is None:
             return snapshots
         return snapshots_to_data(snapshots, self.spatial_shape)
+
+
+def exact_dmd(X, Xp, rank=None, threshold=None):
+    """Exact DMD of snapshot pairs ``Xp ~ A X`` that need not be a time sequence.
+
+    Used for the MATH 526 diagnosis data, where each column pair is a
+    patient's first and next hospital visit. Keeps singular values above
+    ``threshold`` and at most ``rank`` of them. Returns
+    ``(eigenvalues, modes, singular_values)``. (The MATLAB scaled the modes
+    by the eigenvalues instead of using the eigenvectors.)
+    """
+    U, S, Vh = np.linalg.svd(np.asarray(X, float), full_matrices=False)
+    r = len(S) if threshold is None else int(np.sum(S > threshold))
+    r = r if rank is None else min(r, rank)
+    U, Sr, V = U[:, :r], S[:r], Vh[:r].conj().T
+    lam, W = np.linalg.eig(U.conj().T @ Xp @ V / Sr)
+    return lam, Xp @ V / Sr @ W, S
