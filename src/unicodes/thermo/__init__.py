@@ -8,10 +8,12 @@ from .combustion import (
     FUELS,
     Fuel,
     LeanCombustion,
+    adiabatic_flame_temperature,
     atom_balance,
     cp_molar,
     enthalpy_molar,
     heat_of_combustion,
+    parse_formula,
 )
 from .gas_law import GasLaw, Relation, build_relations, expand_stations, solve_relations
 
@@ -21,11 +23,13 @@ __all__ = [
     "GasLaw",
     "LeanCombustion",
     "Relation",
+    "adiabatic_flame_temperature",
     "atom_balance",
     "build_relations",
     "cp_molar",
     "enthalpy_molar",
     "expand_stations",
     "heat_of_combustion",
+    "parse_formula",
     "solve_relations",
 ]

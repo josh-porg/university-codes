@@ -42,6 +42,15 @@ NASA7 = {
         (0.02991423e2, 0.07000644e-2, -0.05633828e-6, -0.09231578e-10, 0.15827519e-14, -0.0835034e4),
         (0.03298124e2, 0.08249441e-2, -0.08143015e-5, -0.09475434e-9, 0.04134872e-11, -0.10125209e4),
     ),
+    # GRI-Mech 3.0 (added for the AE 571 lab 1 fuels; checked against h_f and continuity at 1000 K)
+    "CH4": (
+        (7.48514950e-2, 1.33909467e-2, -5.73285809e-6, 1.22292535e-9, -1.01815230e-13, -9.46834459e3),
+        (5.14987613, -1.36709788e-2, 4.91800599e-5, -4.84743026e-8, 1.66693956e-11, -1.02466476e4),
+    ),
+    "C3H8": (
+        (7.5341368, 1.8872239e-2, -6.2718491e-6, 9.1475649e-10, -4.7838069e-14, -1.6467516e4),
+        (0.93355381, 2.6424579e-2, 6.1059727e-6, -2.1977499e-8, 9.5149253e-12, -1.395852e4),
+    ),
 }
 
 # Heywood, Internal Combustion Engine Fundamentals, Table 4.8:
@@ -68,7 +77,19 @@ FUELS = {
     "gasoline (heavy)": Fuel("Gasoline (Heavy)", 8.26, 15.5, 114.8, "C8.26H15.5"),
     "gasoline (light)": Fuel("Gasoline (Light)", 7.76, 13.1, 106.4, "C7.76H13.1"),
     "hydrogen": Fuel("Hydrogen", 0.0, 2.0, 2.0, "H2"),
+    "methane": Fuel("Methane", 1.0, 4.0, 16.04, "CH4"),
+    "propane": Fuel("Propane", 3.0, 8.0, 44.10, "C3H8"),
 }
+
+
+def parse_formula(formula: str) -> dict[str, float]:
+    """Element counts of a chemical formula such as ``"CH4O"`` or ``"C8.26H15.5"`` (``str2Elements``)."""
+    import re
+
+    counts: dict[str, float] = {}
+    for element, n in re.findall(r"([A-Z][a-z]?)(\d*\.?\d*)", formula):
+        counts[element] = counts.get(element, 0.0) + (float(n) if n else 1.0)
+    return counts
 
 
 @dataclass(frozen=True)
@@ -149,3 +170,27 @@ def heat_of_combustion(rxn: LeanCombustion, T: float, T_ref: float = 298.0) -> f
         + rxn.n2 * enthalpy_molar("N2", T_ref)
     ) + (rxn.b * cp_avg("CO2") + rxn.c * cp_avg("H2O") + rxn.d * cp_avg("O2") + rxn.n2 * cp_avg("N2")) * dT
     return H_r - H_p
+
+
+def adiabatic_flame_temperature(fuel: str | Fuel, equivalence_ratio: float, oxidizer: str = "air",
+                                T_reactants: float = 298.15, T_max: float = 6000.0) -> float:
+    """Constant-pressure adiabatic flame temperature of complete lean combustion (AE 571 lab 1).
+
+    Solves ``H_reactants(T_reactants) = H_products(T_ad)`` with the species
+    polynomials (no dissociation). ``oxidizer`` is ``"air"`` or ``"O2"``.
+    The lab's Newton iteration used ``a = a_stoich * ER``; lean mixtures
+    need ``a = a_stoich / ER`` (as in :func:`atom_balance`).
+    """
+    from scipy.optimize import brentq
+
+    rxn = atom_balance(fuel, equivalence_ratio)
+    n2 = rxn.n2 if oxidizer.lower() == "air" else 0.0
+    sp = rxn.fuel.species
+    H_r = enthalpy_molar(sp, T_reactants) + rxn.a * enthalpy_molar("O2", T_reactants) + n2 * enthalpy_molar("N2", T_reactants)
+
+    def residual(T):
+        H_p = (rxn.b * enthalpy_molar("CO2", T) + rxn.c * enthalpy_molar("H2O", T) + rxn.d * enthalpy_molar("O2", T)
+               + n2 * enthalpy_molar("N2", T))
+        return H_p - H_r
+
+    return brentq(residual, T_reactants, T_max)

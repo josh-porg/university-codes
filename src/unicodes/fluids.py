@@ -43,3 +43,34 @@ class PipeSection:
     def delta_p(self) -> float:
         """Static pressure change p2 - p1 (Pa) from Bernoulli plus the minor loss."""
         return self.rho * (self.V_initial**2 - self.V_final**2) / 2 - self.pressure_loss
+
+
+def reynolds_number(rho, V, L, mu):
+    return rho * V * L / mu
+
+
+def friction_factor_laminar(Re):
+    """Darcy friction factor of fully developed laminar pipe flow, ``64 / Re``."""
+    return 64 / Re
+
+
+def friction_factor_colebrook(Re, rel_roughness):
+    """Darcy friction factor from the Colebrook equation (``getfrictionfactorCoelbrook``)."""
+    from scipy.optimize import brentq
+
+    def g(inv_sqrt_f):
+        return inv_sqrt_f + 2 * __import__("math").log10(rel_roughness / 3.7 + 2.51 * inv_sqrt_f / Re)
+
+    return 1 / brentq(g, 0.5, 100) ** 2
+
+
+def friction_factor_haaland(Re, rel_roughness):
+    """Haaland's explicit approximation (``getfrictionfactorHaaland``; ``CoelbrookAlt`` is the same formula)."""
+    import math
+
+    return (1 / (-1.8 * math.log10((rel_roughness / 3.7) ** 1.11 + 6.9 / Re))) ** 2
+
+
+def darcy_pressure_drop(f, length, diameter, rho, V):
+    """``f (L / D) rho V^2 / 2``."""
+    return f * length / diameter * rho * V**2 / 2

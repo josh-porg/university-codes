@@ -127,3 +127,22 @@ def aircraft_aerodynamic_centre(x_ac_wf, C_L_alpha_wf, x_ac_h, C_L_alpha_h, S_h,
     h = eta_h * S_h / S * C_L_alpha_h * (1 - deda_h)
     c = eta_c * S_c / S * C_L_alpha_c * (1 + deda_c)
     return (wf * (x_ac_wf + munk_shift) + h * x_ac_h + c * x_ac_c) / (wf + h + c)
+
+
+def lla_to_flat(lat, lon, alt, lat0, lon0, h_ref=0.0, psi=0.0):
+    """Flat-earth north/east/down position (m) of geodetic points (MATLAB ``lla2flat``, AE 245).
+
+    Uses the WGS-84 meridian and prime-vertical radii at the reference
+    latitude; ``psi`` rotates the north axis (rad). Angles in degrees,
+    altitude positive up; returns ``(north, east, down)``.
+    """
+    a, f = 6378137.0, 1 / 298.257223563
+    e2 = f * (2 - f)
+    phi0 = np.deg2rad(lat0)
+    R_n = a / np.sqrt(1 - e2 * np.sin(phi0) ** 2)
+    R_m = R_n * (1 - e2) / (1 - e2 * np.sin(phi0) ** 2)
+    dN = np.deg2rad(np.asarray(lat, float) - lat0) * R_m
+    dE = np.deg2rad(np.asarray(lon, float) - lon0) * R_n * np.cos(phi0)
+    north = np.cos(psi) * dN + np.sin(psi) * dE
+    east = -np.sin(psi) * dN + np.cos(psi) * dE
+    return north, east, -(np.asarray(alt, float) + h_ref)
