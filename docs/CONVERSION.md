@@ -5,7 +5,7 @@ ported. Library code is under `src/unicodes/`; scripts (homework, labs, exams, p
 `examples/<course>/`. Generated from the docstrings of the Python files plus a table of rules, so a file
 listed against several Python files is mentioned in each.
 
-Totals: 865 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 72 other people's or third-party code.
+Totals: 917 ported or folded into a port, 31 not ported (empty, plotting-only, drafts, unfinished), 209 excluded missile work, 20 other people's or third-party code.
 
 Corrections made to the originals are listed in the docstring of each Python function or script.
 
@@ -403,59 +403,59 @@ Corrections made to the originals are listed in the docstring of each Python fun
 
 | MATLAB | Python / note |
 |---|---|
-| `DMD/CODE/CH01_INTRO/Algorithm_1_2.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH01_INTRO/Algorithm_1_3.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH01_INTRO/Algorithm_1_4.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH01_INTRO/Algorithm_1_5.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
+| `DMD/CODE/CH01_INTRO/Algorithm_1_2.m` | `examples/dmd_book/ch01_intro.py` |
+| `DMD/CODE/CH01_INTRO/Algorithm_1_3.m` | examples/dmd_book/ch01_intro.py |
+| `DMD/CODE/CH01_INTRO/Algorithm_1_4.m` | examples/dmd_book/ch01_intro.py |
+| `DMD/CODE/CH01_INTRO/Algorithm_1_5.m` | `examples/dmd_book/ch01_intro.py` |
 | `DMD/CODE/CH01_INTRO/DMD.m` | `examples/data_driven/combustor_dmd.py`, `examples/data_driven/gluhareff_dmd.py`, `src/unicodes/decomposition/dmd.py` |
-| `DMD/CODE/CH01_INTRO/DMDfull.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH02_FLUIDS/computeDMD.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH02_FLUIDS/computePOD.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH02_FLUIDS/loadDATA.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH02_FLUIDS/loadIBPM.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH02_FLUIDS/plotCylinder.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH03_KOOPMAN/Algorithm_3_1.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH04_VIDEO/Algorithm_4_1.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH04_VIDEO/Algorithm_4_2.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH04_VIDEO/Algorithm_4_3.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH04_VIDEO/Algorithm_4_4.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD_demo.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD_map.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH06_DMDC/Algorithm_6_1.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH06_DMDC/Algorithm_Sec_6_2.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH07_TIMEDELAY/DMD_standingwave.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH07_TIMEDELAY/ERA.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH07_TIMEDELAY/ERA_test01.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH07_TIMEDELAY/HMM_DMD.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH08_NOISEPOWER/DMD_eig.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH08_NOISEPOWER/FFTDMD_spectrum.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH08_NOISEPOWER/LDS_DMD_eig.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH08_NOISEPOWER/SVHT_cylinder.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH08_NOISEPOWER/optimal_SVHT_coef.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/Algorithm_9_1.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/compressedDMD.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computeDMDModes.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computeFFTModes.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computePODModes.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/getParms.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/getSparseData.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/plotData.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/projectData.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/runExample.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/cDMD_p40_r21_VORT.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/csDMD_p1000_r21_VORT.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/plotCylinderNoSave.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/utils/cosamp.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH09_SPARSITY/utils/freezeColors.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_1.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_3.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_4.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_5.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_6.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_7through11.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH10_NONLINEAROBSV/dmd_soliton_rhs.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
-| `DMD/CODE/CH12_NEUROSCIENCE/DMD_ECoG.m` | Not ported: companion code of Kutz, Brunton, Brunton & Proctor, *Dynamic Mode Decomposition* (SIAM 2016). The parts you used are in `src/unicodes/decomposition` (DMD, DMDc, SVHT, delay-embedding spectra) |
+| `DMD/CODE/CH01_INTRO/DMDfull.m` | `examples/dmd_book/ch01_intro.py` |
+| `DMD/CODE/CH02_FLUIDS/computeDMD.m` | `examples/dmd_book/ch02_fluids.py` |
+| `DMD/CODE/CH02_FLUIDS/computePOD.m` | `examples/dmd_book/ch02_fluids.py` |
+| `DMD/CODE/CH02_FLUIDS/loadDATA.m` | `examples/dmd_book/ch02_fluids.py` |
+| `DMD/CODE/CH02_FLUIDS/loadIBPM.m` | `examples/dmd_book/ch02_fluids.py` |
+| `DMD/CODE/CH02_FLUIDS/plotCylinder.m` | `examples/dmd_book/cylinder_plot.py` |
+| `DMD/CODE/CH03_KOOPMAN/Algorithm_3_1.m` | `examples/dmd_book/ch03_koopman.py` |
+| `DMD/CODE/CH04_VIDEO/Algorithm_4_1.m` | `examples/dmd_book/ch04_video.py` |
+| `DMD/CODE/CH04_VIDEO/Algorithm_4_2.m` | examples/dmd_book/ch04_video.py |
+| `DMD/CODE/CH04_VIDEO/Algorithm_4_3.m` | examples/dmd_book/ch04_video.py |
+| `DMD/CODE/CH04_VIDEO/Algorithm_4_4.m` | `examples/dmd_book/ch04_video.py` |
+| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD.m` | `examples/dmd_book/ch05_multiresolution.py`, `src/unicodes/decomposition/variants.py` |
+| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD_demo.m` | `examples/dmd_book/ch05_multiresolution.py` |
+| `DMD/CODE/CH05_MULTIRESOLUTION/mrDMD_map.m` | `examples/dmd_book/ch05_multiresolution.py`, `src/unicodes/decomposition/variants.py` |
+| `DMD/CODE/CH06_DMDC/Algorithm_6_1.m` | `examples/dmd_book/ch06_dmdc.py` |
+| `DMD/CODE/CH06_DMDC/Algorithm_Sec_6_2.m` | `examples/dmd_book/ch06_dmdc.py` |
+| `DMD/CODE/CH07_TIMEDELAY/DMD_standingwave.m` | `examples/dmd_book/ch07_time_delay.py` |
+| `DMD/CODE/CH07_TIMEDELAY/ERA.m` | `examples/dmd_book/ch07_time_delay.py`, `src/unicodes/decomposition/variants.py` |
+| `DMD/CODE/CH07_TIMEDELAY/ERA_test01.m` | `examples/dmd_book/ch07_time_delay.py` |
+| `DMD/CODE/CH07_TIMEDELAY/HMM_DMD.m` | `examples/dmd_book/ch07_time_delay.py` |
+| `DMD/CODE/CH08_NOISEPOWER/DMD_eig.m` | `examples/dmd_book/ch08_noise_power.py`, `src/unicodes/decomposition/variants.py` |
+| `DMD/CODE/CH08_NOISEPOWER/FFTDMD_spectrum.m` | `examples/dmd_book/ch08_noise_power.py` |
+| `DMD/CODE/CH08_NOISEPOWER/LDS_DMD_eig.m` | `examples/dmd_book/ch08_noise_power.py` |
+| `DMD/CODE/CH08_NOISEPOWER/SVHT_cylinder.m` | `examples/dmd_book/ch08_noise_power.py` |
+| `DMD/CODE/CH08_NOISEPOWER/optimal_SVHT_coef.m` | `examples/dmd_book/ch08_noise_power.py` |
+| `DMD/CODE/CH09_SPARSITY/Algorithm_9_1.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/compressedDMD.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computeDMDModes.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computeFFTModes.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/computePODModes.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/getParms.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/getSparseData.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/plotData.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/projectData.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX1_TORUS/runExample.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/cDMD_p40_r21_VORT.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/csDMD_p1000_r21_VORT.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH09_SPARSITY/EX2_CYLINDER/plotCylinderNoSave.m` | `examples/dmd_book/ch09_sparsity.py`, `examples/dmd_book/cylinder_plot.py` |
+| `DMD/CODE/CH09_SPARSITY/utils/cosamp.m` | `examples/dmd_book/ch09_sparsity.py`, `src/unicodes/decomposition/linalg.py` |
+| `DMD/CODE/CH09_SPARSITY/utils/freezeColors.m` | `examples/dmd_book/ch09_sparsity.py` |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_1.m` | `examples/dmd_book/ch10_nonlinear_observables.py` |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_3.m` | examples/dmd_book/ch10_nonlinear_observables.py |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_4.m` | examples/dmd_book/ch10_nonlinear_observables.py |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_5.m` | examples/dmd_book/ch10_nonlinear_observables.py |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_6.m` | `examples/dmd_book/ch10_nonlinear_observables.py` |
+| `DMD/CODE/CH10_NONLINEAROBSV/Algorithm_10_7through11.m` | `examples/dmd_book/ch10_nonlinear_observables.py`, `src/unicodes/decomposition/variants.py` |
+| `DMD/CODE/CH10_NONLINEAROBSV/dmd_soliton_rhs.m` | `examples/dmd_book/ch10_nonlinear_observables.py` |
+| `DMD/CODE/CH12_NEUROSCIENCE/DMD_ECoG.m` | `examples/dmd_book/ch12_neuroscience.py` |
 | `DMD/DMD.mlx` | `examples/data_driven/combustor_dmd.py`, `examples/data_driven/gluhareff_dmd.py`, `src/unicodes/decomposition/dmd.py` |
 | `DMD/DMD_combustor_driver.mlx` | `examples/data_driven/combustor_dmd.py` |
 | `DMD/DMD_declarative_driver.mlx` | examples/data_driven/combustor_dmd.py and src/unicodes/decomposition/dmd.py |
@@ -476,7 +476,7 @@ Corrections made to the originals are listed in the docstring of each Python fun
 | `DMD/Gluhareff_Data/Data_26_2_2025/Gluhareff_26_2_2025_rawData/data_extractor_V_0_Backup.mlx` | Not ported: empty backup of data_extracter (see examples/data_driven/gluhareff_dmd.py) |
 | `DMD/Gluhareff_Data/Data_26_2_2025/data_extracter.mlx` | `examples/data_driven/gluhareff_dmd.py` |
 | `DMD/Gluhareff_Data/Data_26_2_2025/data_extractor_V_0_Backup.mlx` | Not ported: empty backup of data_extracter (see examples/data_driven/gluhareff_dmd.py) |
-| `DMD/Gluhareff_Data/Data_26_2_2025/optimal_SVHT_coef.m` | src/unicodes/decomposition/linalg.py |
+| `DMD/Gluhareff_Data/Data_26_2_2025/optimal_SVHT_coef.m` | `examples/dmd_book/ch08_noise_power.py` |
 | `DMD/Gluhareff_Data/Data_26_2_2025/perform_DMD_script.mlx` | `examples/data_driven/gluhareff_dmd.py` |
 | `DMD/Gluhareff_Data/Data_26_2_2025/reconstruct.m` | src/unicodes/decomposition/dmd.py (`DMD.reconstruct`) |
 | `DMD/InOutFormat.m` | src/unicodes/io/tecplot.py |

@@ -51,7 +51,8 @@ src/unicodes/              the library: one module or subpackage per topic
                            schemes, grids, flux-reconstruction operators
     composites/            classical lamination theory (Ply, Laminate, micromechanics)
     controls.py            linear flight-dynamics models, modes, doublets, linear MPC
-    decomposition/         DMD, DMDc, POD, SINDy, randomized SVD, SVHT, DMD/FFT spectra
+    decomposition/         DMD, DMDc, fb/tls DMD, mrDMD, ERA, kernel DMD, POD, SINDy, randomized
+                           SVD, SVHT, CoSaMP, FastICA, DMD/FFT spectra
     flight_dynamics/       6-DOF model with passive aero-compliant flaps, Dryden turbulence,
                            ISO 2631 ride quality, kinematics/quaternions
     fluids.py              pipe sections, friction factors
