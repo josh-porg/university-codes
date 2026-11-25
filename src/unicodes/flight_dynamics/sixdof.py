@@ -10,8 +10,25 @@ Port of Ben Mays' ``BenMays6DOF`` and its descendants (``BenMays6DOF_PAH*``,
 * controls ``[throttle, elevator, aileron, rudder]`` drive first-order
   actuators; flaps take spring stiffness ``k``, damping ``c_r``/``c_c`` and
   neutral angle ``delta_0`` as their "controls";
-* optional gusts ``[u_g, v_g, w_g(, p_g, q_g, r_g)]`` in body axes are added
-  to the air-relative velocity and rates, as in ``Aether_6DOF``.
+* optional gusts ``[u_g, v_g, w_g(, p_g, q_g, r_g)]`` are wind velocities
+  (and rotational gust rates) in body axes.  Aerodynamic forces, moments and
+  flap hinge moments use the AIR-RELATIVE velocity ``(u - u_g, v - v_g, w - w_g)``
+  and rates ``(P - p_g, ...)``, which define the air-relative alpha, beta and
+  dynamic pressure; the kinematics and inertial position use the inertial body
+  velocity.  ``w_g > 0`` is a downward-moving air mass, so an updraft is
+  ``w_g < 0`` and raises the air-relative angle of attack.
+
+Corrections relative to the original port (and possibly the MATLAB originals,
+``Aether_6DOF`` / ``BenMays6DOF_PAH*``, which this file followed):
+
+1. The gust used to be *added* to ``u, v, w`` everywhere: it moved the inertial
+   position with the air mass, and the wing lift (built from the alpha *state*)
+   never saw it, so a rigid aircraft kept ``alpha = 0`` in turbulence while only
+   the flap hinge moment responded.
+2. The flap rolling-moment coefficient was multiplied by the dimensional
+   spanwise arm ``r_cg[1]``; it is now ``r_cg[1] / b``.  The dimensional arm
+   overstated the flaps' roll authority by ``b`` (36x for the Cessna 182) and
+   made the coupled aircraft diverge in roll in turbulence.
 
 Units are whatever the model is given (the course used ft, slug, s). The
 MATLAB mixed metre flap chords with ft/s airspeeds; keep the flap in the
@@ -151,52 +168,71 @@ def critical_damping(I_h, k, q_bar, chord, C_h_delta, zeta=0.7):
     return 2 * I_h * zeta * np.sqrt(-mu * (2 * I_h * zeta - 1) * (2 * I_h * zeta + 1)) / (4 * I_h**2 * zeta**2 - 1)
 
 
-def derivatives(t, x, controls, ac: Aircraft, flaps=(), gust=None):
-    """State derivative of the 6-DOF model (the ``aircraft`` nested function)."""
+def _air_and_loads(x, controls, ac: Aircraft, flaps=(), gust=None):
+    """Inertial and air-relative body velocities, specific forces and moments."""
     d = ac.derivatives
-    V, alpha, beta, phi, theta, psi, P, Q, R = x[:9]
+    V, alpha, beta = x[:3]
+    P, Q, R = x[6:9]
     dt_x, de_x, da_x, dr_x = x[12:16]
+    # inertial body-axis velocity (kinematics)
     u = V * np.cos(alpha) * np.cos(beta)
     v = V * np.sin(beta)
     w = V * np.sin(alpha) * np.cos(beta)
+    # air-relative velocity and rates (aerodynamics)
+    ua, va, wa = u, v, w
     Pa, Qa, Ra = P, Q, R
     if gust is not None:
-        u, v, w = u + gust[0], v + gust[1], w + gust[2]
+        ua, va, wa = u - gust[0], v - gust[1], w - gust[2]
         if len(gust) == 6:
-            Pa, Qa, Ra = P + gust[3], Q + gust[4], R + gust[5]
+            Pa, Qa, Ra = P - gust[3], Q - gust[4], R - gust[5]
+    Va = np.sqrt(ua**2 + va**2 + wa**2)
+    alpha_a = np.arctan2(wa, ua)
+    beta_a = np.arcsin(va / Va)
 
     u_trim = ac.V_trim * np.cos(ac.alpha_trim)
-    da_alpha = alpha - ac.alpha_trim
-    q_bar = 0.5 * ac.rho * V**2
+    da_alpha = alpha_a - ac.alpha_trim
+    q_bar = 0.5 * ac.rho * Va**2
 
     flap_lift = sum(0.5 * d.C_L_alpha * f.tau * x[16 + 2 * i] for i, f in enumerate(flaps))
-    flap_roll = -sum(0.5 * d.C_L_alpha * f.tau * x[16 + 2 * i] * f.r_cg[1] for i, f in enumerate(flaps))
+    # rolling-moment arm is non-dimensional (y / b)
+    flap_roll = -sum(0.5 * d.C_L_alpha * f.tau * x[16 + 2 * i] * f.r_cg[1] / ac.b for i, f in enumerate(flaps))
 
+    du = (ua - u_trim) / u_trim
     C_L = (d.C_L1 + d.C_L_alpha * da_alpha + d.C_L_q * Qa * ac.c_bar / 2 / u_trim
-           + d.C_L_u * (u - u_trim) / u_trim + d.C_L_de * de_x + flap_lift)
+           + d.C_L_u * du + d.C_L_de * de_x + flap_lift)
     C_D = d.C_D0 + C_L**2 / (np.pi * ac.aspect_ratio * d.e)
     hb = ac.b / 2 / u_trim
-    C_Y = d.C_y_beta * beta + d.C_y_p * Pa * hb + d.C_y_r * Ra * hb + d.C_y_da * da_x + d.C_y_dr * dr_x
-    C_ls = d.C_l_beta * beta + d.C_l_p * Pa * hb + d.C_l_r * Ra * hb + d.C_l_da * da_x + d.C_l_dr * dr_x + flap_roll
-    du = (u - u_trim) / u_trim
+    C_Y = d.C_y_beta * beta_a + d.C_y_p * Pa * hb + d.C_y_r * Ra * hb + d.C_y_da * da_x + d.C_y_dr * dr_x
+    C_ls = d.C_l_beta * beta_a + d.C_l_p * Pa * hb + d.C_l_r * Ra * hb + d.C_l_da * da_x + d.C_l_dr * dr_x + flap_roll
     C_ms = (d.C_m1 + d.C_m_alpha * da_alpha + d.C_m_q * Qa * ac.c_bar / 2 / u_trim + d.C_m_u * du
             + d.C_m_de * de_x + 2 * d.C_m1 * du + (d.C_mT_u + 2 * d.C_mT1) * du + d.C_mT_alpha * da_alpha)
-    C_ns = d.C_n_beta * beta + d.C_n_p * Pa * hb + d.C_n_r * Ra * hb + d.C_n_da * da_x + d.C_n_dr * dr_x
+    C_ns = d.C_n_beta * beta_a + d.C_n_p * Pa * hb + d.C_n_r * Ra * hb + d.C_n_da * da_x + d.C_n_dr * dr_x
 
-    sa, ca = np.sin(alpha), np.cos(alpha)
+    sa, ca = np.sin(alpha_a), np.cos(alpha_a)
     C_x = C_L * sa - C_D * ca
     C_z = -C_L * ca - C_D * sa
     C_l = C_ls * ca - C_ns * sa
     C_n = C_ls * sa + C_ns * ca
 
+    f_spec = np.array([(q_bar * ac.S * C_x + ac.thrust) / ac.mass,
+                       q_bar * ac.S * C_Y / ac.mass,
+                       q_bar * ac.S * C_z / ac.mass])
+    moments = (C_l * q_bar * ac.S * ac.b, C_ms * q_bar * ac.S * ac.c_bar, C_n * q_bar * ac.S * ac.b)
+    return (u, v, w), (ua, va, wa), (Pa, Qa, Ra), f_spec, moments
+
+
+def specific_force(x, controls, ac: Aircraft, flaps=(), gust=None):
+    """Body-axis specific force ``(aero + thrust) / m`` (what an accelerometer at the c.g. reads)."""
+    return _air_and_loads(x, controls, ac, flaps, gust)[3]
+
+
+def derivatives(t, x, controls, ac: Aircraft, flaps=(), gust=None):
+    """State derivative of the 6-DOF model (the ``aircraft`` nested function)."""
+    V, alpha, beta, phi, theta, psi, P, Q, R = x[:9]
+    (u, v, w), (ua, va, wa), (Pa, Qa, Ra), (ax, ay, az), (L, M, N) = _air_and_loads(x, controls, ac, flaps, gust)
+
     sp, cp, st, ct, ss, cs = np.sin(phi), np.cos(phi), np.sin(theta), np.cos(theta), np.sin(psi), np.cos(psi)
     g = ac.g
-    ax = (q_bar * ac.S * C_x + ac.thrust) / ac.mass
-    ay = q_bar * ac.S * C_Y / ac.mass
-    az = q_bar * ac.S * C_z / ac.mass
-    L = C_l * q_bar * ac.S * ac.b
-    M = C_ms * q_bar * ac.S * ac.c_bar
-    N = C_n * q_bar * ac.S * ac.b
 
     udot = ax - g * st + R * v - Q * w
     vdot = ay + g * sp * ct - R * u + P * w
@@ -227,7 +263,7 @@ def derivatives(t, x, controls, ac: Aircraft, flaps=(), gust=None):
         if f.disabled:
             out += [0.0, 0.0]
         else:
-            out += [delta_dot, f.hinge_acceleration(delta, delta_dot, ac.rho, np.array([u, v, w]), (Pa, Qa, Ra))]
+            out += [delta_dot, f.hinge_acceleration(delta, delta_dot, ac.rho, np.array([ua, va, wa]), (Pa, Qa, Ra))]
     return np.array(out, dtype=float)
 
 
@@ -236,12 +272,16 @@ class SimulationResult:
     t: np.ndarray
     x: np.ndarray  # (n_steps, n_states)
     names: list = field(default_factory=list)
+    specific_force: np.ndarray = None  # (n_steps, 3) body-axis (aero + thrust)/m at each sample
 
     def __getitem__(self, name):
         return self.x[:, self.names.index(name)]
 
     def inertial_acceleration(self):
-        """Second difference of the N/E/D position, the quantity the PAH optimiser minimised."""
+        """Second difference of the N/E/D position, the quantity the PAH optimiser minimised.
+
+        Amplifies integrator error by ``1/dt^2``; for ride quality prefer ``specific_force``.
+        """
         dt = np.diff(self.t).mean()
         return np.diff(self.x[:, 9:12], 2, axis=0) / dt**2
 
@@ -260,7 +300,9 @@ def simulate(ac: Aircraft, t, x0, controls, flaps=(), gusts=None, rtol=1e-6, ato
         sol = solve_ivp(derivatives, (t[i], t[i + 1]), X[i], args=(controls[i], ac, flaps, g), rtol=rtol, atol=atol)
         X[i + 1] = sol.y[:, -1]
     names = STATE_NAMES + [n for i in range(len(flaps)) for n in (f"delta_f{i + 1}", f"delta_f{i + 1}_dot")]
-    return SimulationResult(t, X, names)
+    sf = np.array([specific_force(X[i], controls[i], ac, flaps, None if gusts is None else gusts[i])
+                   for i in range(len(t))])
+    return SimulationResult(t, X, names, sf)
 
 
 def initial_state(ac: Aircraft, theta=None, flaps=(), elevator=0.0):
