@@ -35,7 +35,7 @@ def dryden_parameters(altitude, intensity="moderate", sigma_high=15 * FT):
 
     Below 1000 ft the low-altitude model with the 20 ft wind for
     ``intensity`` (15/30/45 kt); above 2000 ft isotropic with
-    ``L_u = 2 L_v = L_w = 1750 ft`` and ``sigma = sigma_high`` (the MATLAB
+    ``L_u = 2 L_v = 2 L_w = 1750 ft`` and ``sigma = sigma_high`` (the MATLAB
     hard-coded the severe 46,000 ft value, 15 ft/s); linear blend between.
     """
     W20 = {"light": 15, "moderate": 30, "severe": 45}[intensity.lower()] * KT
@@ -45,9 +45,12 @@ def dryden_parameters(altitude, intensity="moderate", sigma_high=15 * FT):
         sw = 0.1 * W20
         su = sw / (0.177 + 0.000823 * h) ** 0.4
         Lu = h / (0.177 + 0.000823 * h) ** 1.2
-        return np.array([su, su, sw, Lu, Lu / 2, h])
+        # MIL-HDBK-1797 (forms with 2L): L_u = 2 L_v, 2 L_w = h
+        return np.array([su, su, sw, Lu, Lu / 2, h / 2])
 
-    high = np.array([sigma_high, sigma_high, sigma_high, 1750, 875, 1750])
+    # MIL-HDBK-1797 high altitude: L_u = 2 L_v = 2 L_w = 1750 ft (the 2L forms used by
+    # dryden_gusts; equivalent to L_u = L_v = L_w = 1750 ft in the MIL-F-8785C forms)
+    high = np.array([sigma_high, sigma_high, sigma_high, 1750, 875, 875])
     if h < 1000:
         p = low(max(h, 10.0))
     elif h > 2000:
